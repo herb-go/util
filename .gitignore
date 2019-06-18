@@ -22,7 +22,9 @@ _testmain.go
 *.exe
 *.test
 *.prof
+.directory
 debug
 .vscode/launch.json
 testconfig_test.go
 .vscode
+.directory
