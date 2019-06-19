@@ -1,20 +1,21 @@
 package config
 
 import (
-	"bufio"
+	"bytes"
 	"encoding/json"
 	"io"
-	"os"
 	"strings"
+
+	"github.com/herb-go/util"
 )
 
-func LoadJSON(path string, v interface{}) error {
-	f, err := os.Open(path)
+func LoadJSON(file util.FileObject, v interface{}) error {
+
+	bs, err := util.ReadFile(file)
 	if err != nil {
-		return NewError(path, err)
+		return NewError(file.URI(), err)
 	}
-	defer f.Close()
-	r := bufio.NewReader(f)
+	r := bytes.NewBuffer(bs)
 	var bytes = []byte{}
 	err = nil
 	var line string
@@ -28,12 +29,12 @@ func LoadJSON(path string, v interface{}) error {
 	}
 	err = json.Unmarshal(bytes, v)
 	if err != nil {
-		return NewError(path, err)
+		return NewError(file.URI(), err)
 	}
 	return nil
 }
-func MustLoadJSON(path string, v interface{}) {
-	err := LoadJSON(path, v)
+func MustLoadJSON(file util.FileObject, v interface{}) {
+	err := LoadJSON(file, v)
 	if err != nil {
 		panic(err)
 	}

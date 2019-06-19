@@ -10,20 +10,24 @@ import (
 var Debug = false
 
 type Loader struct {
-	Path     string
-	Loader   func(path string)
+	File     util.FileObject
+	Loader   func(util.FileObject)
 	Position string
+	Preload  func()
 }
 
 func (l *Loader) Load() {
 	if Debug || util.ForceDebug {
-		fmt.Printf("Herb-go util debug: Load config \"%s\"", l.Path)
+		fmt.Printf("Herb-go util debug: Load config \"%s\"", l.File.URI())
 		if l.Position != "" {
 			fmt.Print(l.Position)
 		}
 
 	}
-	l.Loader(l.Path)
+	if l.Preload != nil {
+		l.Preload()
+	}
+	l.Loader(l.File)
 
 }
 
@@ -31,45 +35,48 @@ var registeredLoader = []Loader{}
 
 var Lock sync.RWMutex
 
-func RegisterLoader(path string, loader func(path string)) {
+func RegisterLoader(file util.FileObject, loader func(file util.FileObject)) {
 	var position string
 	lines := util.GetStackLines(8, 9)
 	if len(lines) == 1 {
 		position = fmt.Sprintf("%s\r\n", lines[0])
 	}
-	l := Loader{Path: path, Loader: loader, Position: position}
+	l := Loader{File: file, Loader: loader, Position: position}
 	registeredLoader = append(registeredLoader, l)
 }
 
-type LoaderWatcher struct {
-	Loader   *Loader
-	Watcher  *WatcherManager
-	Callback func(Event)
-}
-
-func (l *LoaderWatcher) Load() {
-	l.Loader.Load()
-}
-func RegisterLoaderAndWatch(path string, loader func(path string)) *LoaderWatcher {
+func RegisterLoaderAndWatch(file util.FileObject, loader func(util.FileObject)) *Loader {
 	var position string
 	lines := util.GetStackLines(8, 9)
 	if len(lines) == 1 {
 		position = fmt.Sprintf("%s\r\n", lines[0])
 	}
-	l := Loader{Path: path, Loader: loader, Position: position}
+	l := Loader{File: file, Loader: loader, Position: position}
 	registeredLoader = append(registeredLoader, l)
-	callback := func(event Event) {
-		if event.IsWrite() || event.IsCreate() {
-			l.Load()
-		}
-	}
-	Watcher.On(path, callback)
-	return &LoaderWatcher{Loader: &l, Watcher: Watcher, Callback: callback}
+	l.Preload = Watcher.Watch(file, func() {
+		l.Load()
+	})
+	return &l
 }
-func LoadAll() {
+func LoadAll(files ...util.FileObject) {
 	defer Lock.RUnlock()
 	Lock.RLock()
+	Watcher = NewWatcherManager()
+	err := Watcher.Start()
+	if err != nil {
+		panic(err)
+	}
+NextLoader:
 	for _, v := range registeredLoader {
-		v.Load()
+		if len(files) != 0 {
+			for _, configfile := range files {
+				if util.IsSameFile(v.File, configfile) {
+					v.Load()
+					continue NextLoader
+				}
+			}
+		} else {
+			v.Load()
+		}
 	}
 }

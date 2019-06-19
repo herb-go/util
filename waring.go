@@ -10,6 +10,9 @@ func SetWarning(module string, info ...string) {
 	warnings[module] = info
 }
 
+func CleanWarnings() {
+	warnings = map[string][]string{}
+}
 func Warnings() map[string][]string {
 	return warnings
 }

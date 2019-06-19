@@ -12,6 +12,16 @@ type Module struct {
 	Position string
 }
 
+func (m *Module) Load() {
+	if Debug || ForceDebug {
+		fmt.Println("Herb-go util debug: Init module " + m.Name)
+		if m.Position != "" {
+			fmt.Print(m.Position)
+		}
+	}
+	m.Handler()
+}
+
 var Debug = false
 
 func DebugPrintln(args ...interface{}) {
@@ -22,6 +32,17 @@ func DebugPrintln(args ...interface{}) {
 
 type modulelist []Module
 
+var unloaders []func()
+
+func OnUnloadModules(f func()) {
+	unloaders = append(unloaders, f)
+}
+
+func UnloadModules() {
+	for _, v := range unloaders {
+		v()
+	}
+}
 func (m modulelist) Len() int {
 	return len(m)
 }
@@ -45,17 +66,22 @@ func RegisterModule(Name string, handler func()) Module {
 	return m
 }
 
-func InitModulesOrderByName() {
+func InitModulesOrderByName(enabledModules ...string) {
+	unloaders = []func(){}
+	CleanWarnings()
 	MustLoadRegisteredFolders()
 	sort.Sort(Modules)
-	for k := range Modules {
-		if Debug || ForceDebug {
-			fmt.Println("Herb-go util debug: Init module " + Modules[k].Name)
-			if Modules[k].Position != "" {
-				fmt.Print(Modules[k].Position)
+NextModule:
+	for _, v := range Modules {
+		if len(enabledModules) > 0 {
+			for _, m := range enabledModules {
+				if v.Name == m {
+					v.Load()
+					continue NextModule
+				}
 			}
 		}
-		Modules[k].Handler()
+		v.Load()
 	}
 	if Debug || ForceDebug {
 		SetWarning("Util", "Debug mode enabled.")

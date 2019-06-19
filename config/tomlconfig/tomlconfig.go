@@ -2,30 +2,30 @@ package tomlconfig
 
 import (
 	"bytes"
-	"io/ioutil"
 
 	"github.com/BurntSushi/toml"
+	"github.com/herb-go/util"
 	"github.com/herb-go/util/config"
 )
 
 //Load load toml file and unmarshaler to interface.
 //Return any error if rasied
-func Load(path string, v interface{}) error {
-	data, err := ioutil.ReadFile(path)
+func Load(file util.FileObject, v interface{}) error {
+	bs, err := util.ReadFile(file)
 	if err != nil {
-		return config.NewError(path, err)
+		return config.NewError(file.URI(), err)
 	}
-	err = toml.Unmarshal(data, v)
+	err = toml.Unmarshal(bs, v)
 	if err != nil {
-		return config.NewError(path, err)
+		return config.NewError(file.URI(), err)
 	}
 	return nil
 }
 
 //MustLoad load toml file and unmarshaler to interface.
 //Panic if  any error rasied
-func MustLoad(path string, v interface{}) {
-	err := Load(path, v)
+func MustLoad(file util.FileObject, v interface{}) {
+	err := Load(file, v)
 	if err != nil {
 		panic(err)
 	}
@@ -33,19 +33,19 @@ func MustLoad(path string, v interface{}) {
 
 //Save save interface to toml file
 //Return any error if rasied
-func Save(path string, v interface{}) error {
+func Save(file util.FileObject, v interface{}) error {
 	buffer := bytes.NewBuffer([]byte{})
 	err := toml.NewEncoder(buffer).Encode(v)
 	if err != nil {
 		return err
 	}
-	return ioutil.WriteFile(path, buffer.Bytes(), 0655)
+	return util.WriteFile(file, buffer.Bytes(), 0640)
 }
 
 //MustSave save interface to toml file
 //Panic if  any error rasied
-func MustSave(path string, v interface{}) {
-	err := Save(path, v)
+func MustSave(file util.FileObject, v interface{}) {
+	err := Save(file, v)
 	if err != nil {
 		panic(err)
 	}

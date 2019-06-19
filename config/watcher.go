@@ -45,11 +45,25 @@ func (e *Event) IsChmod() bool {
 }
 
 type WatcherManager struct {
+	unwatchers []func()
 	*fsnotify.Watcher
 	C               chan int
 	registeredFuncs map[string][]func(event Event)
 }
 
+func (w *WatcherManager) Watch(file util.FileObject, callback func()) func() {
+	if file.Watchable() {
+		watcher := file.Watcher()
+		return func() {
+			if watcher == nil {
+				Watcher.OnChange(file.URI(), callback)
+			} else {
+				w.unwatchers = append(w.unwatchers, watcher(callback))
+			}
+		}
+	}
+	return nil
+}
 func (w *WatcherManager) On(path string, callback func(event Event)) {
 	if w.registeredFuncs[path] == nil {
 		w.registeredFuncs[path] = []func(event Event){callback}
@@ -58,9 +72,23 @@ func (w *WatcherManager) On(path string, callback func(event Event)) {
 	}
 	w.Add(path)
 }
+
+func (w *WatcherManager) OnChange(path string, callback func()) {
+	w.On(path, func(event Event) {
+		if event.IsWrite() || event.IsCreate() {
+			callback()
+		}
+	})
+
+}
 func (w *WatcherManager) Close() {
 	w.Watcher.Close()
 	close(w.C)
+	for _, v := range w.unwatchers {
+		if v != nil {
+			v()
+		}
+	}
 }
 func (w *WatcherManager) Start() error {
 	watecher, err := fsnotify.NewWatcher()
@@ -90,18 +118,10 @@ func (w *WatcherManager) Start() error {
 
 func NewWatcherManager() *WatcherManager {
 	w := &WatcherManager{
+		unwatchers:      []func(){},
 		registeredFuncs: map[string][]func(event Event){},
 	}
 	return w
 }
 
 var Watcher *WatcherManager
-
-func init() {
-	var err error
-	Watcher = NewWatcherManager()
-	err = Watcher.Start()
-	if err != nil {
-		panic(err)
-	}
-}
