@@ -22,14 +22,19 @@ var IgnoreEnv = false
 
 //Getenv get env value with SystemEnvNamePrefix
 func Getenv(envname string) string {
-	return os.Getenv(SystemEnvNamePrefix + EnvForceDebugMode)
+	return os.Getenv(SystemEnvNamePrefix + envname)
 }
 
-func init() {
+func initEnv() {
+	ForceDebug = false
+	Debug = false
 	RootPath = os.Getenv(EnvRootPath)
 	fmt.Println(RootPath)
 	if IgnoreEnv == false && Getenv(EnvForceDebugMode) != "" {
 		ForceDebug = true
 		Debug = true
 	}
+}
+func init() {
+	initEnv()
 }

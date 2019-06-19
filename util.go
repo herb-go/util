@@ -67,10 +67,3 @@ var IsErrorIgnored = func(err error) bool {
 var RegisterLoggerIgnoredErrorsChecker = func(f func(error) bool) {
 	LoggerIgnoredErrorsChecker = append(LoggerIgnoredErrorsChecker, f)
 }
-
-func init() {
-	err := UpdatePaths()
-	if err != nil {
-		panic(err)
-	}
-}

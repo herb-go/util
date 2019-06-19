@@ -2,6 +2,7 @@ package util
 
 import (
 	"io/ioutil"
+	"net/url"
 	"os"
 	"path"
 )
@@ -51,7 +52,7 @@ func (f File) URI() string {
 	return string(f)
 }
 func (f File) ID() string {
-	return path.Join("file://local", string(f))
+	return path.Join("file://local", url.PathEscape((string(f))))
 }
 func (f File) Watchable() bool {
 	return true
@@ -88,7 +89,7 @@ func (f *RelativeFile) WriteRaw(data []byte, perm os.FileMode) error {
 	return ioutil.WriteFile(f.URI(), data, perm)
 }
 func (f *RelativeFile) ID() string {
-	return path.Join("relative://", string(f.Location), f.Path)
+	return path.Join("relative://", string(f.Location), url.PathEscape(f.Path))
 }
 
 func (f *RelativeFile) Watchable() bool {

@@ -47,11 +47,21 @@ var UpdatePaths = func() error {
 	if RootPath == "" {
 		RootPath = filepath.Join(filepath.Dir(mustPath(os.Executable())), "../")
 	}
-	ResouresPath = path.Join(RootPath, "resources")
-	AppDataPath = path.Join(RootPath, "appdata")
-	ConfigPath = path.Join(RootPath, "config")
-	SystemPath = path.Join(RootPath, "system")
-	ConstantsPath = path.Join(RootPath, "system", "constants")
+	if ResouresPath == "" {
+		ResouresPath = path.Join(RootPath, "resources")
+	}
+	if AppDataPath == "" {
+		AppDataPath = path.Join(RootPath, "appdata")
+	}
+	if ConfigPath == "" {
+		ConfigPath = path.Join(RootPath, "config")
+	}
+	if SystemPath == "" {
+		SystemPath = path.Join(RootPath, "system")
+	}
+	if ConstantsPath == "" {
+		ConstantsPath = path.Join(RootPath, "system", "constants")
+	}
 	return nil
 }
 
@@ -59,9 +69,6 @@ var MustChRoot = func() {
 	Must(os.Chdir(RootPath))
 }
 
-func SetConfigPath(paths ...string) {
-	ConfigPath = path.Join(paths...)
-}
 func MustGetWD() string {
 	path, err := os.Getwd()
 	if err != nil {
@@ -90,4 +97,11 @@ func Constants(filepaths ...string) string {
 }
 func Root(filepaths ...string) string {
 	return joinPath(RootPath, filepaths...)
+}
+
+func init() {
+	err := UpdatePaths()
+	if err != nil {
+		panic(err)
+	}
 }

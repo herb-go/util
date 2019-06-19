@@ -61,8 +61,12 @@ func RegisterLoaderAndWatch(file util.FileObject, loader func(util.FileObject)) 
 func LoadAll(files ...util.FileObject) {
 	defer Lock.RUnlock()
 	Lock.RLock()
+	err := util.UpdatePaths()
+	if err != nil {
+		panic(err)
+	}
 	Watcher = NewWatcherManager()
-	err := Watcher.Start()
+	err = Watcher.Start()
 	if err != nil {
 		panic(err)
 	}
