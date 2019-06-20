@@ -13,7 +13,7 @@ func LoadJSON(file util.FileObject, v interface{}) error {
 
 	bs, err := util.ReadFile(file)
 	if err != nil {
-		return NewError(file.URI(), err)
+		return NewError(file.ID(), err)
 	}
 	r := bytes.NewBuffer(bs)
 	var bytes = []byte{}
@@ -29,7 +29,7 @@ func LoadJSON(file util.FileObject, v interface{}) error {
 	}
 	err = json.Unmarshal(bytes, v)
 	if err != nil {
-		return NewError(file.URI(), err)
+		return NewError(file.ID(), err)
 	}
 	return nil
 }

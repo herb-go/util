@@ -1,7 +1,6 @@
 package util
 
 import (
-	"fmt"
 	"os"
 )
 
@@ -9,10 +8,20 @@ import (
 var SystemEnvNamePrefix = "HerbGo."
 
 //EnvForceDebugMode env field to set force demog mode
-const EnvForceDebugMode = "HerbDebug"
+const EnvForceDebugMode = "Debug"
 
 //EnvRootPath env field to set root path
-const EnvRootPath = "HerbRoot"
+const EnvRootPath = "Path.Root"
+
+const EnvResourcesPath = "Path.Resources"
+
+const EnvConfigPath = "Path.Config"
+
+const EnvAppDataPath = "Path.AppData"
+
+const EnvSystemPath = "Path.System"
+
+const EnvConstantsPath = "Path.Constants"
 
 //ForceDebug force useing debug mode
 var ForceDebug bool
@@ -25,11 +34,18 @@ func Getenv(envname string) string {
 	return os.Getenv(SystemEnvNamePrefix + envname)
 }
 
+func Setenv(envname string, val string) {
+	os.Setenv(SystemEnvNamePrefix+envname, val)
+}
 func initEnv() {
 	ForceDebug = false
 	Debug = false
-	RootPath = os.Getenv(EnvRootPath)
-	fmt.Println(RootPath)
+	RootPath = Getenv(EnvRootPath)
+	ResourcesPath = Getenv(EnvResourcesPath)
+	AppDataPath = Getenv(EnvAppDataPath)
+	ConfigPath = Getenv(EnvConfigPath)
+	SystemPath = Getenv(EnvSystemPath)
+	ConstantsPath = Getenv(EnvConstantsPath)
 	if IgnoreEnv == false && Getenv(EnvForceDebugMode) != "" {
 		ForceDebug = true
 		Debug = true

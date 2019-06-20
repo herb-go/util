@@ -13,11 +13,11 @@ import (
 func Load(file util.FileObject, v interface{}) error {
 	bs, err := util.ReadFile(file)
 	if err != nil {
-		return config.NewError(file.URI(), err)
+		return config.NewError(file.ID(), err)
 	}
 	err = toml.Unmarshal(bs, v)
 	if err != nil {
-		return config.NewError(file.URI(), err)
+		return config.NewError(file.ID(), err)
 	}
 	return nil
 }

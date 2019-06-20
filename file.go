@@ -1,6 +1,7 @@
 package util
 
 import (
+	"html"
 	"io/ioutil"
 	"net/url"
 	"os"
@@ -10,10 +11,11 @@ import (
 type FileLocation string
 
 const FileLocationRoot = FileLocation("")
+const FileLocationAppData = FileLocation("appdata")
 const FileLocationConfig = FileLocation("config")
 const FileLocationConstants = FileLocation("constants")
 const FileLocationSystem = FileLocation("system")
-const FileLocationResoures = FileLocation("resoures")
+const FileLocationResources = FileLocation("resources")
 
 func IsSameFile(src FileObject, dst FileObject) bool {
 	return src.ID() == dst.ID()
@@ -24,7 +26,7 @@ type FileWatcher func(callback func()) (unwatcher func())
 type FileObject interface {
 	ReadRaw() ([]byte, error)
 	WriteRaw([]byte, os.FileMode) error
-	URI() string
+	AbsolutePath() string
 	ID() string
 	Watchable() bool
 	Watcher() FileWatcher
@@ -41,18 +43,23 @@ func WriteFile(file FileObject, data []byte, mode os.FileMode) error {
 type File string
 
 func (f File) ReadRaw() ([]byte, error) {
-	return ioutil.ReadFile(f.URI())
+	return ioutil.ReadFile(f.AbsolutePath())
 }
 
 func (f File) WriteRaw(data []byte, perm os.FileMode) error {
-	return ioutil.WriteFile(f.URI(), data, perm)
+	return ioutil.WriteFile(f.AbsolutePath(), data, perm)
 }
 
-func (f File) URI() string {
+func (f File) AbsolutePath() string {
 	return string(f)
 }
 func (f File) ID() string {
-	return path.Join("file://local", url.PathEscape((string(f))))
+	u := url.URL{
+		Scheme: "file",
+		Host:   "local",
+		Path:   html.EscapeString(string(f)),
+	}
+	return u.String()
 }
 func (f File) Watchable() bool {
 	return true
@@ -66,7 +73,7 @@ type RelativeFile struct {
 	Path     string
 }
 
-func (f *RelativeFile) URI() string {
+func (f *RelativeFile) AbsolutePath() string {
 	switch f.Location {
 	case FileLocationConfig:
 		return Config(f.Path)
@@ -74,22 +81,28 @@ func (f *RelativeFile) URI() string {
 		return Constants(f.Path)
 	case FileLocationSystem:
 		return System(f.Path)
-	case FileLocationResoures:
-		return Resource(f.Path)
-
+	case FileLocationResources:
+		return Resources(f.Path)
+	case FileLocationAppData:
+		return AppData(f.Path)
 	}
 	return Root(f.Path)
 }
 
 func (f *RelativeFile) ReadRaw() ([]byte, error) {
-	return ioutil.ReadFile(f.URI())
+	return ioutil.ReadFile(f.AbsolutePath())
 }
 
 func (f *RelativeFile) WriteRaw(data []byte, perm os.FileMode) error {
-	return ioutil.WriteFile(f.URI(), data, perm)
+	return ioutil.WriteFile(f.AbsolutePath(), data, perm)
 }
 func (f *RelativeFile) ID() string {
-	return path.Join("relative://", string(f.Location), url.PathEscape(f.Path))
+	u := url.URL{
+		Scheme: "relative",
+		Host:   string(f.Location),
+		Path:   html.EscapeString(f.Path),
+	}
+	return u.String()
 }
 
 func (f *RelativeFile) Watchable() bool {
@@ -131,9 +144,16 @@ func SystemFile(filepath ...string) *RelativeFile {
 	return f
 }
 
-func ResouresFile(filepath ...string) *RelativeFile {
+func ResourcesFile(filepath ...string) *RelativeFile {
 	f := NewRelativeFile()
 	f.Path = path.Join(filepath...)
-	f.Location = FileLocationResoures
+	f.Location = FileLocationResources
+	return f
+}
+
+func AppDataFile(filepath ...string) *RelativeFile {
+	f := NewRelativeFile()
+	f.Path = path.Join(filepath...)
+	f.Location = FileLocationAppData
 	return f
 }

@@ -18,7 +18,7 @@ type Loader struct {
 
 func (l *Loader) Load() {
 	if Debug || util.ForceDebug {
-		fmt.Printf("Herb-go util debug: Load config \"%s\"", l.File.URI())
+		fmt.Printf("Herb-go util debug: Load config \"%s\"(%s)", l.File.ID(), l.File.AbsolutePath())
 		if l.Position != "" {
 			fmt.Print(l.Position)
 		}

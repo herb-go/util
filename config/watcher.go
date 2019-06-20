@@ -56,7 +56,10 @@ func (w *WatcherManager) Watch(file util.FileObject, callback func()) func() {
 		watcher := file.Watcher()
 		return func() {
 			if watcher == nil {
-				Watcher.OnChange(file.URI(), callback)
+				if file.AbsolutePath() == "" {
+					return
+				}
+				Watcher.OnChange(file.AbsolutePath(), callback)
 			} else {
 				w.unwatchers = append(w.unwatchers, watcher(callback))
 			}

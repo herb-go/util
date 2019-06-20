@@ -38,7 +38,7 @@ func mustPath(path string, err error) string {
 }
 
 var RootPath string
-var ResouresPath string
+var ResourcesPath string
 var AppDataPath string
 var ConfigPath string
 var SystemPath string
@@ -47,8 +47,8 @@ var UpdatePaths = func() error {
 	if RootPath == "" {
 		RootPath = filepath.Join(filepath.Dir(mustPath(os.Executable())), "../")
 	}
-	if ResouresPath == "" {
-		ResouresPath = path.Join(RootPath, "resources")
+	if ResourcesPath == "" {
+		ResourcesPath = path.Join(RootPath, "resources")
 	}
 	if AppDataPath == "" {
 		AppDataPath = path.Join(RootPath, "appdata")
@@ -80,8 +80,8 @@ func MustGetWD() string {
 func joinPath(p string, filepath ...string) string {
 	return path.Join(p, path.Join(filepath...))
 }
-func Resource(filepaths ...string) string {
-	return joinPath(ResouresPath, filepaths...)
+func Resources(filepaths ...string) string {
+	return joinPath(ResourcesPath, filepaths...)
 }
 func Config(filepaths ...string) string {
 	return joinPath(ConfigPath, filepaths...)
@@ -97,11 +97,4 @@ func Constants(filepaths ...string) string {
 }
 func Root(filepaths ...string) string {
 	return joinPath(RootPath, filepaths...)
-}
-
-func init() {
-	err := UpdatePaths()
-	if err != nil {
-		panic(err)
-	}
 }
