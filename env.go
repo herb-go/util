@@ -4,8 +4,17 @@ import (
 	"os"
 )
 
+var systemEnvNamePrefix = "HerbGo."
+
 //SystemEnvNamePrefix system env name prefix
-var SystemEnvNamePrefix = "HerbGo."
+func SystemEnvNamePrefix() string {
+	return systemEnvNamePrefix
+}
+
+//SetSystemEnvNamePrefix set system env name prefix
+func SetSystemEnvNamePrefix(p string) {
+	systemEnvNamePrefix = p
+}
 
 //EnvForceDebugMode env field to set force demog mode
 const EnvForceDebugMode = "Debug"
@@ -31,11 +40,11 @@ var IgnoreEnv = false
 
 //Getenv get env value with SystemEnvNamePrefix
 func Getenv(envname string) string {
-	return os.Getenv(SystemEnvNamePrefix + envname)
+	return os.Getenv(SystemEnvNamePrefix() + envname)
 }
 
 func Setenv(envname string, val string) {
-	os.Setenv(SystemEnvNamePrefix+envname, val)
+	os.Setenv(SystemEnvNamePrefix()+envname, val)
 }
 func initEnv() {
 	ForceDebug = false

@@ -5,7 +5,6 @@ import (
 	"io/ioutil"
 	"net/url"
 	"os"
-	"path"
 )
 
 type FileLocation string
@@ -28,7 +27,6 @@ type FileObject interface {
 	WriteRaw([]byte, os.FileMode) error
 	AbsolutePath() string
 	ID() string
-	Watchable() bool
 	Watcher() FileWatcher
 }
 
@@ -61,99 +59,20 @@ func (f File) ID() string {
 	}
 	return u.String()
 }
-func (f File) Watchable() bool {
-	return true
-}
 func (f File) Watcher() FileWatcher {
 	return nil
 }
 
-type RelativeFile struct {
-	Location FileLocation
-	Path     string
+func registerLocalFileCreator() {
+	RegisterFileCreator("file", func(id string) (FileObject, error) {
+		u, err := url.Parse(id)
+		if err != nil {
+			return nil, err
+		}
+		return File(u.Path), nil
+	})
 }
 
-func (f *RelativeFile) AbsolutePath() string {
-	switch f.Location {
-	case FileLocationConfig:
-		return Config(f.Path)
-	case FileLocationConstants:
-		return Constants(f.Path)
-	case FileLocationSystem:
-		return System(f.Path)
-	case FileLocationResources:
-		return Resources(f.Path)
-	case FileLocationAppData:
-		return AppData(f.Path)
-	}
-	return Root(f.Path)
-}
-
-func (f *RelativeFile) ReadRaw() ([]byte, error) {
-	return ioutil.ReadFile(f.AbsolutePath())
-}
-
-func (f *RelativeFile) WriteRaw(data []byte, perm os.FileMode) error {
-	return ioutil.WriteFile(f.AbsolutePath(), data, perm)
-}
-func (f *RelativeFile) ID() string {
-	u := url.URL{
-		Scheme: "relative",
-		Host:   string(f.Location),
-		Path:   html.EscapeString(f.Path),
-	}
-	return u.String()
-}
-
-func (f *RelativeFile) Watchable() bool {
-	return true
-}
-func (f *RelativeFile) Watcher() FileWatcher {
-	return nil
-}
-
-func NewRelativeFile() *RelativeFile {
-	return &RelativeFile{}
-}
-
-func ConfigFile(filepath ...string) *RelativeFile {
-	f := NewRelativeFile()
-	f.Path = path.Join(filepath...)
-	f.Location = FileLocationConfig
-	return f
-}
-
-func ConstantsFile(filepath ...string) *RelativeFile {
-	f := NewRelativeFile()
-	f.Path = path.Join(filepath...)
-	f.Location = FileLocationConstants
-	return f
-}
-
-func RootFile(filepath ...string) *RelativeFile {
-	f := NewRelativeFile()
-	f.Path = path.Join(filepath...)
-	f.Location = FileLocationRoot
-	return f
-}
-
-func SystemFile(filepath ...string) *RelativeFile {
-	f := NewRelativeFile()
-	f.Path = path.Join(filepath...)
-	f.Location = FileLocationSystem
-	return f
-}
-
-func ResourcesFile(filepath ...string) *RelativeFile {
-	f := NewRelativeFile()
-	f.Path = path.Join(filepath...)
-	f.Location = FileLocationResources
-	return f
-}
-
-func AppDataFile(filepath ...string) *RelativeFile {
-	f := NewRelativeFile()
-	f.Path = path.Join(filepath...)
-	f.Location = FileLocationAppData
-	return f
+func init() {
+	registerLocalFileCreator()
 }

@@ -23,7 +23,10 @@ func TestEnv(t *testing.T) {
 		Debug = false
 		ForceDebug = false
 	}()
-	SystemEnvNamePrefix = "HerbGo."
+	SetSystemEnvNamePrefix("HerbGo.")
+	if SystemEnvNamePrefix() != "HerbGo." {
+		t.Fatal(SystemEnvNamePrefix())
+	}
 	Setenv("testenv", "testenvvalue")
 	env := os.Getenv("HerbGo.testenv")
 	if env != "testenvvalue" {

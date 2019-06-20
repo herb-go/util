@@ -28,8 +28,8 @@ func TestFile(t *testing.T) {
 		t.Fatal(string(data))
 	}
 
-	if !file1.Watchable() {
-		t.Fatal(file1.Watchable())
+	if file1.AbsolutePath() == "" {
+		t.Fatal(file1.AbsolutePath())
 	}
 	if file1.Watcher() != nil {
 		t.Fatal(file1.Watcher())
@@ -96,8 +96,8 @@ func TestRelativeFile(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if !file.Watchable() {
-		t.Fatal(file.Watchable())
+	if file.AbsolutePath() == "" {
+		t.Fatal(file.AbsolutePath())
 	}
 	if file.Watcher() != nil {
 		t.Fatal(file.Watcher())
@@ -111,6 +111,33 @@ func TestRelativeFile(t *testing.T) {
 		t.Fatal(string(data))
 	}
 	file2 := ConfigFile("file")
+	if IsSameFile(file, file2) {
+		t.Fatal(file2.ID())
+	}
+}
+
+func TestFileObecjtText(t *testing.T) {
+	file := FileObjectText("textdata")
+	data, err := ReadFile(file)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if string(data) != "textdata" {
+		t.Fatal(string(data))
+	}
+
+	if file.AbsolutePath() != "" {
+		t.Fatal(file.AbsolutePath())
+	}
+	if file.Watcher() != nil {
+		t.Fatal(file.Watcher())
+	}
+	err = WriteFile(file, []byte("testcontentupdated"), 0700)
+	if err == nil || GetErrorType(err) != ErrTypeFileObjectNotWriteable {
+		t.Fatal(err)
+	}
+	file2 := FileObjectText("textdata2")
+
 	if IsSameFile(file, file2) {
 		t.Fatal(file2.ID())
 	}
