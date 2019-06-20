@@ -7,19 +7,23 @@ import (
 	"strings"
 )
 
-func Recover(args ...interface{}) {
+func Recover() {
 	if r := recover(); r != nil {
 		err := r.(error)
 		LogError(err)
 	}
 
 }
-func GetStackLines(from int, to int) []string {
-	lines := strings.Split(string(debug.Stack()), "\n")
+
+func getStackLines(stack []byte, from int, to int) []string {
+	lines := strings.Split(string(stack), "\n")
 	if len(lines) < 2 {
 		return []string{}
 	}
 	return lines[from:to]
+}
+func GetStackLines(from int, to int) []string {
+	return getStackLines(debug.Stack(), from, to)
 }
 func LogError(err error) {
 	if IsErrorIgnored(err) == false {
