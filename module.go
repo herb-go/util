@@ -13,21 +13,11 @@ type Module struct {
 }
 
 func (m *Module) Load() {
-	if Debug || ForceDebug {
-		fmt.Println("Herb-go util debug: Init module " + m.Name)
-		if m.Position != "" {
-			fmt.Print(m.Position)
-		}
+	DebugPrintln("Herb-go util debug: Init module " + m.Name)
+	if m.Position != "" {
+		DebugPrint(m.Position)
 	}
 	m.Handler()
-}
-
-var Debug = false
-
-func DebugPrintln(args ...interface{}) {
-	if Debug {
-		fmt.Println(args...)
-	}
 }
 
 type modulelist []Module
@@ -39,8 +29,8 @@ func OnUnloadModules(f func()) {
 }
 
 func UnloadModules() {
-	for _, v := range unloaders {
-		v()
+	for i := len(unloaders) - 1; i >= 0; i-- {
+		unloaders[i]()
 	}
 }
 func (m modulelist) Len() int {
@@ -55,6 +45,9 @@ func (m modulelist) Less(i, j int) bool {
 
 var Modules = modulelist{}
 
+func CleanModules() {
+	Modules = modulelist{}
+}
 func RegisterModule(Name string, handler func()) Module {
 	var position string
 	lines := GetStackLines(8, 9)

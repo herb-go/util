@@ -18,6 +18,26 @@ var QuitChan = make(chan int)
 var SignalChan = make(chan os.Signal)
 var LeaveMessage = "Bye."
 
+var Debug = false
+var DebugOutput = os.Stdout
+
+func DebugPrintln(args ...interface{}) {
+	if Debug || ForceDebug {
+		fmt.Fprintln(DebugOutput, args...)
+	}
+}
+
+func DebugPrintf(format string, args ...interface{}) {
+	if Debug || ForceDebug {
+		fmt.Fprintf(DebugOutput, format, args...)
+	}
+}
+func DebugPrint(args ...interface{}) {
+	if Debug || ForceDebug {
+		fmt.Fprint(DebugOutput, args...)
+	}
+}
+
 func WaitingQuit() {
 	signal.Notify(SignalChan, os.Interrupt, os.Kill)
 	select {
@@ -36,7 +56,7 @@ func Quit() {
 	defer func() {
 		recover()
 	}()
-	QuitChan <- 1
+	close(QuitChan)
 }
 
 var LoggerMaxLength = 5

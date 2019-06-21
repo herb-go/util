@@ -7,6 +7,9 @@ import (
 
 var Initiators = map[string]modulelist{}
 
+func CleanInitiators() {
+	Initiators = map[string]modulelist{}
+}
 func RegisterInitiator(module string, Name string, handler func()) {
 	var position string
 	lines := GetStackLines(8, 9)
@@ -27,12 +30,11 @@ func InitOrderByName(module string) {
 	}
 	sort.Sort(initiators)
 	for k := range initiators {
-		if Debug || ForceDebug {
-			fmt.Printf("Herb-go util debug: Init module function %s/%s.\r\n", module, initiators[k].Name)
-			if initiators[k].Position != "" {
-				fmt.Print(initiators[k].Position)
-			}
+		DebugPrintf("Herb-go util debug: Init module function %s/%s.\r\n", module, initiators[k].Name)
+		if initiators[k].Position != "" {
+			DebugPrint(initiators[k].Position)
 		}
+
 		initiators[k].Handler()
 	}
 }
