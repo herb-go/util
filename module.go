@@ -73,8 +73,9 @@ NextModule:
 					continue NextModule
 				}
 			}
+		} else {
+			v.Load()
 		}
-		v.Load()
 	}
 	if Debug || ForceDebug {
 		SetWarning("Util", "Debug mode enabled.")
