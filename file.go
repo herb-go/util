@@ -7,15 +7,6 @@ import (
 	"os"
 )
 
-type FileLocation string
-
-const FileLocationRoot = FileLocation("")
-const FileLocationAppData = FileLocation("appdata")
-const FileLocationConfig = FileLocation("config")
-const FileLocationConstants = FileLocation("constants")
-const FileLocationSystem = FileLocation("system")
-const FileLocationResources = FileLocation("resources")
-
 func IsSameFile(src FileObject, dst FileObject) bool {
 	return src.ID() == dst.ID()
 }

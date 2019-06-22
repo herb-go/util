@@ -8,22 +8,31 @@ import (
 	"path"
 )
 
+type RelativeFileLocation string
+
+const RelativeFileLocationRoot = RelativeFileLocation("")
+const RelativeFileLocationAppData = RelativeFileLocation("appdata")
+const RelativeFileLocationConfig = RelativeFileLocation("config")
+const RelativeFileLocationConstants = RelativeFileLocation("constants")
+const RelativeFileLocationSystem = RelativeFileLocation("system")
+const RelativeFileLocationResources = RelativeFileLocation("resources")
+
 type RelativeFile struct {
-	Location FileLocation
+	Location RelativeFileLocation
 	Path     string
 }
 
 func (f *RelativeFile) AbsolutePath() string {
 	switch f.Location {
-	case FileLocationConfig:
+	case RelativeFileLocationConfig:
 		return Config(f.Path)
-	case FileLocationConstants:
+	case RelativeFileLocationConstants:
 		return Constants(f.Path)
-	case FileLocationSystem:
+	case RelativeFileLocationSystem:
 		return System(f.Path)
-	case FileLocationResources:
+	case RelativeFileLocationResources:
 		return Resources(f.Path)
-	case FileLocationAppData:
+	case RelativeFileLocationAppData:
 		return AppData(f.Path)
 	}
 	return Root(f.Path)
@@ -56,42 +65,42 @@ func NewRelativeFile() *RelativeFile {
 func ConfigFile(filepath ...string) *RelativeFile {
 	f := NewRelativeFile()
 	f.Path = path.Join(filepath...)
-	f.Location = FileLocationConfig
+	f.Location = RelativeFileLocationConfig
 	return f
 }
 
 func ConstantsFile(filepath ...string) *RelativeFile {
 	f := NewRelativeFile()
 	f.Path = path.Join(filepath...)
-	f.Location = FileLocationConstants
+	f.Location = RelativeFileLocationConstants
 	return f
 }
 
 func RootFile(filepath ...string) *RelativeFile {
 	f := NewRelativeFile()
 	f.Path = path.Join(filepath...)
-	f.Location = FileLocationRoot
+	f.Location = RelativeFileLocationRoot
 	return f
 }
 
 func SystemFile(filepath ...string) *RelativeFile {
 	f := NewRelativeFile()
 	f.Path = path.Join(filepath...)
-	f.Location = FileLocationSystem
+	f.Location = RelativeFileLocationSystem
 	return f
 }
 
 func ResourcesFile(filepath ...string) *RelativeFile {
 	f := NewRelativeFile()
 	f.Path = path.Join(filepath...)
-	f.Location = FileLocationResources
+	f.Location = RelativeFileLocationResources
 	return f
 }
 
 func AppDataFile(filepath ...string) *RelativeFile {
 	f := NewRelativeFile()
 	f.Path = path.Join(filepath...)
-	f.Location = FileLocationAppData
+	f.Location = RelativeFileLocationAppData
 	return f
 }
 
@@ -102,7 +111,7 @@ func registerRelativeFileCreator() {
 			return nil, err
 		}
 		f := NewRelativeFile()
-		f.Location = FileLocation(u.Host)
+		f.Location = RelativeFileLocation(u.Host)
 		f.Path = u.Path
 		return f, nil
 	})
