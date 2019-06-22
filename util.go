@@ -14,13 +14,29 @@ func Must(err error) {
 	}
 }
 
-var QuitChan = make(chan int)
+var quitChan = make(chan int)
+
+func QuitChan() chan int {
+	return quitChan
+}
+
 var SignalChan = make(chan os.Signal)
 var LeaveMessage = "Bye."
 
 var Debug = false
 var DebugOutput = os.Stdout
+var Output = os.Stdout
 
+func Println(args ...interface{}) {
+	fmt.Fprintln(Output, args...)
+}
+
+func Printf(format string, args ...interface{}) {
+	fmt.Fprintf(Output, format, args...)
+}
+func Print(args ...interface{}) {
+	fmt.Fprint(Output, args...)
+}
 func DebugPrintln(args ...interface{}) {
 	if Debug || ForceDebug {
 		fmt.Fprintln(DebugOutput, args...)
@@ -42,8 +58,8 @@ func WaitingQuit() {
 	signal.Notify(SignalChan, os.Interrupt, os.Kill)
 	select {
 	case <-SignalChan:
-		close(QuitChan)
-	case <-QuitChan:
+		Quit()
+	case <-QuitChan():
 	}
 	fmt.Println("Quiting ...")
 }
@@ -52,11 +68,14 @@ func Bye() {
 		fmt.Println(LeaveMessage)
 	}
 }
+
 func Quit() {
 	defer func() {
 		recover()
 	}()
-	close(QuitChan)
+	c := quitChan
+	quitChan = make(chan int)
+	close(c)
 }
 
 var LoggerMaxLength = 5
