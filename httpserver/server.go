@@ -2,10 +2,11 @@ package httpserver
 
 import (
 	"context"
-	"fmt"
 	"net"
 	"net/http"
 	"time"
+
+	"github.com/herb-go/util"
 )
 
 //MustListenAndServeHTTP listen and serve http server with given server,config and handler.
@@ -14,7 +15,7 @@ func MustListenAndServeHTTP(server *http.Server, config Config, app http.Handler
 	go func() {
 		l := config.MustListen()
 		defer l.Close()
-		fmt.Println("Listening " + l.Addr().String())
+		util.Println("Listening " + l.Addr().String())
 		server.Handler = app
 		err := server.Serve(l)
 		if err != nil && err != http.ErrServerClosed {
@@ -27,7 +28,7 @@ func MustListenAndServeHTTP(server *http.Server, config Config, app http.Handler
 //Panic if any error raised.
 func MustServeHTTP(server *http.Server, l net.Listener, app http.Handler) {
 	go func() {
-		fmt.Println("Listening " + l.Addr().String())
+		util.Println("Listening " + l.Addr().String())
 		server.Handler = app
 		err := server.Serve(l)
 		if err != nil && err != http.ErrServerClosed {
@@ -52,7 +53,7 @@ func ShutdownHTTPWithTimeout(Server *http.Server, Timeout time.Duration) {
 
 //WithContextShutdown shutdown  http server ith given context.
 func WithContextShutdown(ctx context.Context, Server *http.Server) {
-	fmt.Println("Http server shuting down...")
+	util.Println("Http server shuting down...")
 	Server.Shutdown(ctx)
-	fmt.Println("Http server Stoped.")
+	util.Println("Http server Stoped.")
 }

@@ -2,10 +2,13 @@ package util
 
 import (
 	"fmt"
+	"io"
 	"net"
 	"os"
 	"os/signal"
+	"sync/atomic"
 	"syscall"
+	"unsafe"
 )
 
 func Must(err error) {
@@ -14,10 +17,18 @@ func Must(err error) {
 	}
 }
 
-var quitChan = make(chan int)
+var initQuitChan = make(chan int)
+var quitChan = unsafe.Pointer(&initQuitChan)
+
+func resetQuitChan() chan int {
+	cnew := make(chan int)
+	cold := atomic.SwapPointer(&quitChan, unsafe.Pointer(&cnew))
+	return *(*chan int)(cold)
+}
 
 func QuitChan() chan int {
-	return quitChan
+	c := atomic.LoadPointer(&quitChan)
+	return *(*chan int)(c)
 }
 
 var SignalChan = make(chan os.Signal)
@@ -25,17 +36,17 @@ var LeaveMessage = "Bye."
 
 var Debug = false
 var DebugOutput = os.Stdout
-var Output = os.Stdout
+var Output io.Writer = os.Stdout
 
-func Println(args ...interface{}) {
-	fmt.Fprintln(Output, args...)
+func Println(args ...interface{}) (n int, err error) {
+	return fmt.Fprintln(Output, args...)
 }
 
-func Printf(format string, args ...interface{}) {
-	fmt.Fprintf(Output, format, args...)
+func Printf(format string, args ...interface{}) (n int, err error) {
+	return fmt.Fprintf(Output, format, args...)
 }
-func Print(args ...interface{}) {
-	fmt.Fprint(Output, args...)
+func Print(args ...interface{}) (n int, err error) {
+	return fmt.Fprint(Output, args...)
 }
 func DebugPrintln(args ...interface{}) {
 	if Debug || ForceDebug {
@@ -61,11 +72,11 @@ func WaitingQuit() {
 		Quit()
 	case <-QuitChan():
 	}
-	fmt.Println("Quiting ...")
+	Println("Quiting ...")
 }
 func Bye() {
 	if LeaveMessage != "" {
-		fmt.Println(LeaveMessage)
+		Println(LeaveMessage)
 	}
 }
 
@@ -73,9 +84,10 @@ func Quit() {
 	defer func() {
 		recover()
 	}()
-	c := quitChan
-	quitChan = make(chan int)
-	close(c)
+	c := resetQuitChan()
+	if c != nil {
+		close(c)
+	}
 }
 
 var LoggerMaxLength = 5
@@ -105,4 +117,8 @@ var IsErrorIgnored = func(err error) bool {
 }
 var RegisterLoggerIgnoredErrorsChecker = func(f func(error) bool) {
 	LoggerIgnoredErrorsChecker = append(LoggerIgnoredErrorsChecker, f)
+}
+
+func init() {
+	resetQuitChan()
 }

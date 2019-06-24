@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"os"
 	"strings"
+
+	"github.com/herb-go/util"
 )
 
 //ErrAppIsInInitializingMode error rasied if app is in initializing mode
@@ -43,13 +45,13 @@ type DevelopmentConfig struct {
 func (c *DevelopmentConfig) MustNotInitializing() {
 	c.loadEnvs()
 	if c.Initializing {
-		fmt.Println("App is in initializing mode.")
+		util.Println("App is in initializing mode.")
 		c.checkInitializers()
 		if len(c.initializingEnvs) > 0 {
-			fmt.Println("Avaliable initializing envs is listed below:")
+			util.Println("Avaliable initializing envs is listed below:")
 			for k := range c.initializingEnvs {
-				fmt.Print("  ")
-				fmt.Println(k)
+				util.Print("  ")
+				util.Println(k)
 			}
 		}
 		panic(ErrAppIsInInitializingMode)
