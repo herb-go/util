@@ -6,10 +6,13 @@ import (
 	"net"
 	"os"
 	"os/signal"
+	"sync"
 	"sync/atomic"
 	"syscall"
 	"unsafe"
 )
+
+var ApplieationLock sync.Mutex
 
 func Must(err error) {
 	if err != nil {
