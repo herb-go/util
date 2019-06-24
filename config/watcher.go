@@ -52,13 +52,10 @@ type WatcherManager struct {
 }
 
 func (w *WatcherManager) Watch(file util.FileObject, callback func()) func() {
-	if file.Watchable() {
+	if file.AbsolutePath() != "" {
 		watcher := file.Watcher()
 		return func() {
 			if watcher == nil {
-				if file.AbsolutePath() == "" {
-					return
-				}
 				Watcher.OnChange(file.AbsolutePath(), callback)
 			} else {
 				w.unwatchers = append(w.unwatchers, watcher(callback))
@@ -67,6 +64,7 @@ func (w *WatcherManager) Watch(file util.FileObject, callback func()) func() {
 	}
 	return nil
 }
+
 func (w *WatcherManager) On(path string, callback func(event Event)) {
 	if w.registeredFuncs[path] == nil {
 		w.registeredFuncs[path] = []func(event Event){callback}
