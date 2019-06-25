@@ -39,7 +39,7 @@ func Save(file util.FileObject, v interface{}) error {
 	if err != nil {
 		return err
 	}
-	return util.WriteFile(file, buffer.Bytes(), 0640)
+	return util.WriteFile(file, buffer.Bytes(), util.DefaultFileMode)
 }
 
 //MustSave save interface to toml file

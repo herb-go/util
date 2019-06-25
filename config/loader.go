@@ -26,12 +26,15 @@ func (l *Loader) Load() {
 		l.Preload()
 	}
 	l.Loader(l.File)
-
 }
 
-var registeredLoader = []Loader{}
+var registeredLoaders = []*Loader{}
 
 var Lock sync.RWMutex
+
+func CleanLoaders() {
+	registeredLoaders = []*Loader{}
+}
 
 func RegisterLoader(file util.FileObject, loader func(file util.FileObject)) {
 	var position string
@@ -40,7 +43,7 @@ func RegisterLoader(file util.FileObject, loader func(file util.FileObject)) {
 		position = fmt.Sprintf("%s\r\n", lines[0])
 	}
 	l := Loader{File: file, Loader: loader, Position: position}
-	registeredLoader = append(registeredLoader, l)
+	registeredLoaders = append(registeredLoaders, &l)
 }
 
 func RegisterLoaderAndWatch(file util.FileObject, loader func(util.FileObject)) *Loader {
@@ -50,10 +53,11 @@ func RegisterLoaderAndWatch(file util.FileObject, loader func(util.FileObject)) 
 		position = fmt.Sprintf("%s\r\n", lines[0])
 	}
 	l := Loader{File: file, Loader: loader, Position: position}
-	registeredLoader = append(registeredLoader, l)
 	l.Preload = Watcher.Watch(file, func() {
 		l.Load()
 	})
+	registeredLoaders = append(registeredLoaders, &l)
+
 	return &l
 }
 func LoadAll(files ...util.FileObject) {
@@ -69,7 +73,7 @@ func LoadAll(files ...util.FileObject) {
 		panic(err)
 	}
 NextLoader:
-	for _, v := range registeredLoader {
+	for _, v := range registeredLoaders {
 		if len(files) != 0 {
 			for _, configfile := range files {
 				if util.IsSameFile(v.File, configfile) {

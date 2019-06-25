@@ -9,11 +9,11 @@ import (
 type Op uint32
 
 var (
-	Create = Op(fsnotify.Create)
-	Write  = Op(fsnotify.Write)
-	Remove = Op(fsnotify.Remove)
-	Rename = Op(fsnotify.Rename)
-	Chmod  = Op(fsnotify.Chmod)
+	OpCreate = Op(fsnotify.Create)
+	OpWrite  = Op(fsnotify.Write)
+	OpRemove = Op(fsnotify.Remove)
+	OpRename = Op(fsnotify.Rename)
+	OpChmod  = Op(fsnotify.Chmod)
 )
 
 type Event struct {

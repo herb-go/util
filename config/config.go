@@ -9,15 +9,34 @@ import (
 	"github.com/herb-go/util"
 )
 
-func LoadJSON(file util.FileObject, v interface{}) error {
+const UnmarshalerNameJSON = "json"
 
+func Load(drivername string, file util.FileObject, v interface{}) error {
 	bs, err := util.ReadFile(file)
 	if err != nil {
 		return NewError(file.ID(), err)
 	}
-	r := bytes.NewBuffer(bs)
+	err = Unmarshal(drivername, bs, v)
+	if err != nil {
+		return NewError(file.ID(), err)
+	}
+	return nil
+
+}
+func LoadJSON(file util.FileObject, v interface{}) error {
+	return Load(UnmarshalerNameJSON, file, v)
+}
+func MustLoadJSON(file util.FileObject, v interface{}) {
+	err := LoadJSON(file, v)
+	if err != nil {
+		panic(err)
+	}
+}
+
+var jsonUnmarshal = func(data []byte, v interface{}) error {
+	var err error
+	r := bytes.NewBuffer(data)
 	var bytes = []byte{}
-	err = nil
 	var line string
 	for err != io.EOF {
 		line, err = r.ReadString(10)
@@ -27,15 +46,9 @@ func LoadJSON(file util.FileObject, v interface{}) error {
 		}
 		bytes = append(bytes, []byte(line)...)
 	}
-	err = json.Unmarshal(bytes, v)
-	if err != nil {
-		return NewError(file.ID(), err)
-	}
-	return nil
+	return json.Unmarshal(bytes, v)
 }
-func MustLoadJSON(file util.FileObject, v interface{}) {
-	err := LoadJSON(file, v)
-	if err != nil {
-		panic(err)
-	}
+
+func init() {
+	RegisterUnmarshaler(UnmarshalerNameJSON, jsonUnmarshal)
 }

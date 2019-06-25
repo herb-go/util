@@ -7,6 +7,8 @@ import (
 	"os"
 )
 
+var DefaultFileMode = os.FileMode(0600)
+
 func IsSameFile(src FileObject, dst FileObject) bool {
 	return src.ID() == dst.ID()
 }
