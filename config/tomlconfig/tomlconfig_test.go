@@ -31,4 +31,11 @@ func TestTOMLConfig(t *testing.T) {
 		util.RootPath = ""
 	}()
 	util.UpdatePaths()
+	file1 := util.RootFile("test.toml")
+	MustSave(file1, d)
+	d1 := &Data{}
+	MustLoad(file1, d1)
+	if d1.Data != "1234" {
+		t.Fatal(d)
+	}
 }
