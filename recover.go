@@ -1,6 +1,7 @@
 package util
 
 import (
+	"errors"
 	"fmt"
 	"log"
 	"runtime/debug"
@@ -9,6 +10,10 @@ import (
 
 func Recover() {
 	if r := recover(); r != nil {
+		s, ok := r.(string)
+		if ok {
+			LogError(errors.New(s))
+		}
 		err := r.(error)
 		LogError(err)
 	}

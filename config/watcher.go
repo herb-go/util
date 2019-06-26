@@ -1,6 +1,8 @@
 package config
 
 import (
+	"sync"
+
 	"github.com/fsnotify/fsnotify"
 	"github.com/herb-go/util"
 )
@@ -47,22 +49,25 @@ func (e *Event) IsChmod() bool {
 type WatcherManager struct {
 	unwatchers []func()
 	*fsnotify.Watcher
-	C               chan int
+	C    chan int
+	lock sync.Mutex
+
 	registeredFuncs map[string][]func(event Event)
 }
 
 func (w *WatcherManager) Watch(file util.FileObject, callback func()) func() {
-	if file.AbsolutePath() != "" {
-		watcher := file.Watcher()
-		return func() {
-			if watcher == nil {
+	watcher := file.Watcher()
+	if watcher == nil {
+		if file.AbsolutePath() != "" {
+			return func() {
 				Watcher.OnChange(file.AbsolutePath(), callback)
-			} else {
-				w.unwatchers = append(w.unwatchers, watcher(callback))
 			}
 		}
+		return nil
 	}
-	return nil
+	return func() {
+		w.unwatchers = append(w.unwatchers, watcher(callback))
+	}
 }
 
 func (w *WatcherManager) On(path string, callback func(event Event)) {
@@ -83,7 +88,11 @@ func (w *WatcherManager) OnChange(path string, callback func()) {
 
 }
 func (w *WatcherManager) Close() {
-	w.Watcher.Close()
+	w.lock.Lock()
+	defer w.lock.Unlock()
+	if w.Watcher != nil {
+		w.Watcher.Close()
+	}
 	close(w.C)
 	for _, v := range w.unwatchers {
 		if v != nil {
@@ -92,8 +101,12 @@ func (w *WatcherManager) Close() {
 	}
 }
 func (w *WatcherManager) Start() error {
+	w.lock.Lock()
+	defer w.lock.Unlock()
 	watecher, err := fsnotify.NewWatcher()
 	w.Watcher = watecher
+	w.unwatchers = []func(){}
+	w.registeredFuncs = map[string][]func(event Event){}
 	w.C = make(chan int)
 	if err != nil {
 		return err
@@ -107,8 +120,10 @@ func (w *WatcherManager) Start() error {
 					defer util.Recover()
 					k(Event{&event})
 				}
-			case err := <-w.Watcher.Errors:
-				util.LogError(err)
+			case err, ok := <-w.Watcher.Errors:
+				if ok {
+					util.LogError(err)
+				}
 			case <-w.C:
 				return
 			}
@@ -125,4 +140,19 @@ func NewWatcherManager() *WatcherManager {
 	return w
 }
 
-var Watcher *WatcherManager
+var Watcher *WatcherManager = NewWatcherManager()
+
+func MustResetWatcher() {
+	Watcher.Close()
+	err := Watcher.Start()
+	if err != nil {
+		panic(err)
+	}
+}
+
+func init() {
+	err := Watcher.Start()
+	if err != nil {
+		panic(err)
+	}
+}

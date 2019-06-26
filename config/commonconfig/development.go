@@ -3,7 +3,6 @@ package commonconfig
 import (
 	"errors"
 	"fmt"
-	"os"
 	"strings"
 
 	"github.com/herb-go/util"
@@ -73,7 +72,7 @@ func (c *DevelopmentConfig) addInitializer(i *initializer) {
 func (c *DevelopmentConfig) loadEnvs() {
 	c.usedInitializingEnvs = map[string]string{}
 	for k := range c.initializingEnvs {
-		env := os.Getenv(k)
+		env := util.Getenv(k)
 		if env != "" {
 			c.usedInitializingEnvs[k] = env
 		}

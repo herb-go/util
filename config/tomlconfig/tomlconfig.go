@@ -8,18 +8,12 @@ import (
 	"github.com/herb-go/util/config"
 )
 
+const UnmarshalerNameTOML = "toml"
+
 //Load load toml file and unmarshaler to interface.
 //Return any error if rasied
 func Load(file util.FileObject, v interface{}) error {
-	bs, err := util.ReadFile(file)
-	if err != nil {
-		return config.NewError(file.ID(), err)
-	}
-	err = toml.Unmarshal(bs, v)
-	if err != nil {
-		return config.NewError(file.ID(), err)
-	}
-	return nil
+	return config.Load(UnmarshalerNameTOML, file, v)
 }
 
 //MustLoad load toml file and unmarshaler to interface.
@@ -49,4 +43,12 @@ func MustSave(file util.FileObject, v interface{}) {
 	if err != nil {
 		panic(err)
 	}
+}
+
+var tomlUnmarshal = func(data []byte, v interface{}) error {
+	return toml.Unmarshal(data, v)
+}
+
+func init() {
+	config.RegisterUnmarshaler(UnmarshalerNameTOML, tomlUnmarshal)
 }
