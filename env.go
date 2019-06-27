@@ -40,11 +40,15 @@ var IgnoreEnv = false
 
 //Getenv get env value with SystemEnvNamePrefix
 func Getenv(envname string) string {
-	return os.Getenv(SystemEnvNamePrefix() + envname)
+	return os.Getenv(EnvnameWithPrefix(envname))
 }
 
 func Setenv(envname string, val string) {
-	os.Setenv(SystemEnvNamePrefix()+envname, val)
+	os.Setenv(EnvnameWithPrefix(envname), val)
+}
+
+func EnvnameWithPrefix(envname string) string {
+	return SystemEnvNamePrefix() + envname
 }
 func initEnv() {
 	ForceDebug = false

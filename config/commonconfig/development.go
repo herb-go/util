@@ -40,8 +40,8 @@ type DevelopmentConfig struct {
 	usedInitializingEnvs map[string]string
 }
 
-//MustNotInitializing panic if Initializing is true
-func (c *DevelopmentConfig) MustNotInitializing() {
+//InitializeAndPanicIfNeeded initialize and panic if Initializing is true
+func (c *DevelopmentConfig) InitializeAndPanicIfNeeded() {
 	c.loadEnvs()
 	if c.Initializing {
 		util.Println("App is in initializing mode.")
@@ -50,7 +50,7 @@ func (c *DevelopmentConfig) MustNotInitializing() {
 			util.Println("Avaliable initializing envs is listed below:")
 			for k := range c.initializingEnvs {
 				util.Print("  ")
-				util.Println(k)
+				util.Println(util.EnvnameWithPrefix(k))
 			}
 		}
 		panic(ErrAppIsInInitializingMode)
@@ -58,7 +58,7 @@ func (c *DevelopmentConfig) MustNotInitializing() {
 	if len(c.usedInitializingEnvs) > 0 {
 		used := []string{}
 		for k := range c.usedInitializingEnvs {
-			used = append(used, k)
+			used = append(used, util.EnvnameWithPrefix((k)))
 		}
 		panic(ErrInitializingEnvIsSet(strings.Join(used, ",")))
 	}
@@ -93,8 +93,8 @@ func (c *DevelopmentConfig) checkInitializers() {
 }
 
 // OnEnv declare env name list which will be used by initializer.
-func (c *DevelopmentConfig) OnEnv(envs ...string) *RegisteredEnvs {
-	return &RegisteredEnvs{
+func (c *DevelopmentConfig) OnEnv(envs ...string) *WatchedEnvs {
+	return &WatchedEnvs{
 		envs:   envs,
 		config: c,
 	}
@@ -105,14 +105,20 @@ func (c *DevelopmentConfig) GetInitializeEnv(name string) string {
 	return c.usedInitializingEnvs[name]
 }
 
-//RegisteredEnvs registered env name list
-type RegisteredEnvs struct {
+func (c *DevelopmentConfig) CleanWatehedEnvs() {
+	c.initializers = []*initializer{}
+	c.initializingEnvs = map[string]bool{}
+	c.usedInitializingEnvs = map[string]string{}
+}
+
+//WatchedEnvs watched env name list
+type WatchedEnvs struct {
 	envs   []string
 	config *DevelopmentConfig
 }
 
 //ThenInitalize set initalizer to registered env list.
-func (e *RegisteredEnvs) ThenInitalize(handler func() bool) []string {
+func (e *WatchedEnvs) ThenInitalize(handler func() bool) []string {
 	i := &initializer{
 		envs:    e.envs,
 		handler: handler,
