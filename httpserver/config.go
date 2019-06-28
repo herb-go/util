@@ -26,6 +26,12 @@ type Config struct {
 	IdleTimeoutInSecond int64
 	//MaxHeaderBytes max header length in bytes.
 	MaxHeaderBytes int
+	//TLS whether use tls
+	TLS bool
+	//TLSCertPath tls cert file path
+	TLSCertPath string
+	//TLSKeyPath tls key file path
+	TLSKeyPath string
 }
 
 //Server create http server with config.
@@ -51,7 +57,7 @@ func (c *Config) Listen() (net.Listener, error) {
 //Return net listener.
 //Panic if any error raised.
 func (c *Config) MustListen() net.Listener {
-	l, err := net.Listen(c.Net, c.Addr)
+	l, err := c.Listen()
 	if err != nil {
 		panic(err)
 	}

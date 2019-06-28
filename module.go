@@ -2,7 +2,6 @@ package util
 
 import (
 	"fmt"
-	"log"
 	"sort"
 )
 
@@ -88,6 +87,6 @@ NextModule:
 				output = output + "    " + wv + "\r\n"
 			}
 		}
-		log.Print(output)
+		Logger.Print(output)
 	}
 }

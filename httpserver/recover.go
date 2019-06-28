@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"log"
 	"net/http"
-	"os"
 	"runtime/debug"
 	"strings"
 
@@ -14,7 +13,7 @@ import (
 //RecoverMiddleware create recover middleware with given logger.
 func RecoverMiddleware(logger *log.Logger) func(w http.ResponseWriter, req *http.Request, next http.HandlerFunc) {
 	if logger == nil {
-		logger = log.New(os.Stderr, log.Prefix(), log.Flags())
+		logger = util.Logger
 	}
 	return func(w http.ResponseWriter, req *http.Request, next http.HandlerFunc) {
 		defer func() {

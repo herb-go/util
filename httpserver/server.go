@@ -2,7 +2,6 @@ package httpserver
 
 import (
 	"context"
-	"net"
 	"net/http"
 	"time"
 
@@ -11,31 +10,23 @@ import (
 
 //MustListenAndServeHTTP listen and serve http server with given server,config and handler.
 //Panic if any error raised.
-func MustListenAndServeHTTP(server *http.Server, config Config, app http.Handler) {
+func MustListenAndServeHTTP(server *http.Server, config *Config, app http.Handler) {
 	go func() {
+		var err error
 		l := config.MustListen()
 		defer l.Close()
-		util.Println("Listening " + l.Addr().String())
 		server.Handler = app
-		err := server.Serve(l)
+		if config.TLS {
+			util.Println("Listening https " + l.Addr().String())
+			err = server.ServeTLS(l, config.TLSCertPath, config.TLSKeyPath)
+		} else {
+			util.Println("Listening " + l.Addr().String())
+			err = server.Serve(l)
+		}
 		if err != nil && err != http.ErrServerClosed {
 			panic(err)
 		}
 	}()
-}
-
-//MustServeHTTP  serve http server with given server,listener  and handler.
-//Panic if any error raised.
-func MustServeHTTP(server *http.Server, l net.Listener, app http.Handler) {
-	go func() {
-		util.Println("Listening " + l.Addr().String())
-		server.Handler = app
-		err := server.Serve(l)
-		if err != nil && err != http.ErrServerClosed {
-			panic(err)
-		}
-	}()
-
 }
 
 // ShutdownHTTP  shutdown  http server.
