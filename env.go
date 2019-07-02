@@ -39,12 +39,57 @@ var ForceDebug bool
 var IgnoreEnv = false
 
 //Getenv get env value with SystemEnvNamePrefix
-func Getenv(envname string) string {
-	return os.Getenv(EnvnameWithPrefix(envname))
+func GetHerbEnv(envname string) string {
+	return Getenv(EnvnameWithPrefix(envname))
 }
 
-func Setenv(envname string, val string) {
-	os.Setenv(EnvnameWithPrefix(envname), val)
+func SetHerbEnv(envname string, val string) {
+	Setenv(EnvnameWithPrefix(envname), val)
+}
+
+type AppEnv interface {
+	Getenv(string) string
+	Setenv(string, string) error
+}
+
+func Getenv(key string) string {
+	return Env.Getenv(key)
+}
+
+func Setenv(key string, value string) error {
+	return Env.Setenv(key, value)
+}
+
+type PrefixEnv struct {
+	Prefix string
+}
+
+func (e *PrefixEnv) Getenv(key string) string {
+	return os.Getenv(e.Prefix + key)
+}
+
+func (e *PrefixEnv) Setenv(key string, value string) error {
+	return os.Setenv(key, value)
+}
+func NewPrefixEnv(prefix string) *PrefixEnv {
+	return &PrefixEnv{
+		Prefix: prefix,
+	}
+}
+
+var OsEnv = NewPrefixEnv("")
+
+var Env = OsEnv
+
+type PresetEnv map[string]string
+
+func (e PresetEnv) Getenv(key string) string {
+	return e[key]
+}
+
+func (e PresetEnv) Setenv(key string, value string) error {
+	e[key] = value
+	return nil
 }
 
 func EnvnameWithPrefix(envname string) string {
@@ -53,13 +98,13 @@ func EnvnameWithPrefix(envname string) string {
 func initEnv() {
 	ForceDebug = false
 	Debug = false
-	RootPath = Getenv(EnvRootPath)
-	ResourcesPath = Getenv(EnvResourcesPath)
-	AppDataPath = Getenv(EnvAppDataPath)
-	ConfigPath = Getenv(EnvConfigPath)
-	SystemPath = Getenv(EnvSystemPath)
-	ConstantsPath = Getenv(EnvConstantsPath)
-	if IgnoreEnv == false && Getenv(EnvForceDebugMode) != "" {
+	RootPath = GetHerbEnv(EnvRootPath)
+	ResourcesPath = GetHerbEnv(EnvResourcesPath)
+	AppDataPath = GetHerbEnv(EnvAppDataPath)
+	ConfigPath = GetHerbEnv(EnvConfigPath)
+	SystemPath = GetHerbEnv(EnvSystemPath)
+	ConstantsPath = GetHerbEnv(EnvConstantsPath)
+	if IgnoreEnv == false && GetHerbEnv(EnvForceDebugMode) != "" {
 		ForceDebug = true
 		Debug = true
 	}

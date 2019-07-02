@@ -39,17 +39,17 @@ var LeaveMessage = "Bye."
 
 var Debug = false
 var DebugOutput = os.Stdout
-var Output io.Writer = os.Stdout
+var Stdout io.Writer = os.Stdout
 
 func Println(args ...interface{}) (n int, err error) {
-	return fmt.Fprintln(Output, args...)
+	return fmt.Fprintln(Stdout, args...)
 }
 
 func Printf(format string, args ...interface{}) (n int, err error) {
-	return fmt.Fprintf(Output, format, args...)
+	return fmt.Fprintf(Stdout, format, args...)
 }
 func Print(args ...interface{}) (n int, err error) {
-	return fmt.Fprint(Output, args...)
+	return fmt.Fprint(Stdout, args...)
 }
 func DebugPrintln(args ...interface{}) {
 	if Debug || ForceDebug {

@@ -21,7 +21,7 @@ func TestDevelopment(t *testing.T) {
 	func() {
 		defer func() {
 			defer config.CleanWatehedEnvs()
-			defer util.Setenv("test", "")
+			defer util.SetHerbEnv("test", "")
 			r := recover()
 			if r == nil {
 				t.Fatal(r)
@@ -31,7 +31,7 @@ func TestDevelopment(t *testing.T) {
 				t.Fatal(err)
 			}
 		}()
-		util.Setenv("test", "testval")
+		util.SetHerbEnv("test", "testval")
 		config.OnEnv("test").ThenInitalize(func() bool {
 			return true
 		})
@@ -41,7 +41,7 @@ func TestDevelopment(t *testing.T) {
 	func() {
 		defer func() {
 			defer config.CleanWatehedEnvs()
-			util.Setenv("test", "")
+			util.SetHerbEnv("test", "")
 			r := recover()
 			if r == nil {
 				t.Fatal(r)
@@ -58,14 +58,14 @@ func TestDevelopment(t *testing.T) {
 			}
 			return true
 		})
-		util.Setenv("test", "testval")
+		util.SetHerbEnv("test", "testval")
 		config.InitializeAndPanicIfNeeded()
 	}()
 
 	func() {
 		defer func() {
 			defer config.CleanWatehedEnvs()
-			util.Setenv("test", "")
+			util.SetHerbEnv("test", "")
 			r := recover()
 			if r == nil {
 				t.Fatal(r)
@@ -78,14 +78,14 @@ func TestDevelopment(t *testing.T) {
 		config.OnEnv("test").ThenInitalize(func() bool {
 			return false
 		})
-		util.Setenv("test", "testval")
+		util.SetHerbEnv("test", "testval")
 		config.InitializeAndPanicIfNeeded()
 	}()
 
 	func() {
 		defer func() {
 			defer config.CleanWatehedEnvs()
-			util.Setenv("test", "")
+			util.SetHerbEnv("test", "")
 			r := recover()
 			if r == nil {
 				t.Fatal(r)
@@ -98,7 +98,7 @@ func TestDevelopment(t *testing.T) {
 		config.OnEnv("test").ThenInitalize(func() bool {
 			return true
 		})
-		util.Setenv("test", "")
+		util.SetHerbEnv("test", "")
 		config.InitializeAndPanicIfNeeded()
 	}()
 }

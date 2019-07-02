@@ -60,9 +60,9 @@ func TestUtil(t *testing.T) {
 
 func TestPrint(t *testing.T) {
 	buffer := bytes.NewBuffer([]byte{})
-	Output = buffer
+	Stdout = buffer
 	defer func() {
-		Output = os.Stdout
+		Stdout = os.Stdout
 	}()
 	_, err := Print("123", "456")
 	if err != nil {

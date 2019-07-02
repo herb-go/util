@@ -72,7 +72,7 @@ func (c *DevelopmentConfig) addInitializer(i *initializer) {
 func (c *DevelopmentConfig) loadEnvs() {
 	c.usedInitializingEnvs = map[string]string{}
 	for k := range c.initializingEnvs {
-		env := util.Getenv(k)
+		env := util.GetHerbEnv(k)
 		if env != "" {
 			c.usedInitializingEnvs[k] = env
 		}
