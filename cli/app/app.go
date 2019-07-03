@@ -77,7 +77,7 @@ func (a *Application) Run() {
 		err = m.Exec(a, args)
 	}
 	if err != nil {
-		util.Println(err.Error())
+		util.Println("Error: " + err.Error())
 	}
 }
 

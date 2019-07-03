@@ -90,7 +90,7 @@ func (q *Question) ExecIf(a *app.Application, conditon bool, result interface{})
 		}
 	}
 
-	return fmt.Errorf("Choice \"%s\" is not  avaliable", s)
+	return fmt.Errorf("Choice \"%s\" is not avaliable", s)
 }
 
 func NewQuestion() *Question {
