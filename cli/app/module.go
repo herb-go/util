@@ -1,32 +1,44 @@
 package app
 
+import (
+	"flag"
+)
+
 type Module interface {
 	ID() string
 	Cmd() string
-	Help() string
-	Desc() string
+	Help(a *Application) string
+	Desc(a *Application) string
+	FlagSet() *flag.FlagSet
 	Exec(a *Application, args []string) error
 }
 
 type BasicModule struct {
+	flagset *flag.FlagSet
 }
 
-func (m BasicModule) ID() string {
+func (m *BasicModule) ID() string {
 	return ""
 }
 
-func (m BasicModule) Cmd() string {
+func (m *BasicModule) Cmd() string {
 	return ""
 }
 
-func (m BasicModule) Help() string {
+func (m *BasicModule) Help(a *Application) string {
 	return ""
 }
 
-func (m BasicModule) Desc() string {
+func (m *BasicModule) Desc(a *Application) string {
 	return ""
 }
-func (m BasicModule) Exec(a *Application, args []string) error {
+func (m *BasicModule) FlagSet() *flag.FlagSet {
+	if m.flagset == nil {
+		m.flagset = flag.NewFlagSet("", flag.ContinueOnError)
+	}
+	return m.flagset
+}
+func (m *BasicModule) Exec(a *Application, args []string) error {
 	return nil
 }
 

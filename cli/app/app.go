@@ -2,6 +2,7 @@ package app
 
 import (
 	"bytes"
+	"flag"
 	"fmt"
 	"io"
 	"os"
@@ -26,6 +27,7 @@ type Application struct {
 	Modules       *Modules
 	Stdout        io.Writer
 	Stdin         io.Reader
+	FlagDefaults  string
 	HelpModuleCmd string
 }
 
@@ -57,7 +59,21 @@ func (a *Application) Printf(format string, args ...interface{}) (n int, err err
 func (a *Application) Getenv(key string) string {
 	return a.Env.Getenv(key)
 }
+func (a *Application) appendFlagDefaults(flgs *flag.FlagSet) {
+	output := bytes.NewBuffer(nil)
+	flgs.SetOutput(output)
+	flgs.PrintDefaults()
+	a.FlagDefaults += output.String()
+}
 
+func (a *Application) PrintModuleHelp(m Module) {
+	a.FlagDefaults = ""
+	a.ShowIntro()
+	a.Println(m.Help(a))
+	a.appendFlagDefaults(m.FlagSet())
+	a.Println("Options:")
+	a.Println(a.FlagDefaults)
+}
 func (a *Application) Setenv(key string, value string) error {
 	return a.Env.Setenv(key, value)
 }

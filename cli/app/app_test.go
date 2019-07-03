@@ -2,6 +2,7 @@ package app
 
 import (
 	"bytes"
+	"flag"
 	"fmt"
 	"io/ioutil"
 	"strings"
@@ -92,10 +93,32 @@ func TestAppRun(t *testing.T) {
 		t.Fatal(intro)
 	}
 }
+
+func TestFlagDefaults(t *testing.T) {
+	app := NewApplication(nil)
+	flgs := flag.NewFlagSet("", flag.ContinueOnError)
+	flgs.String("test", "testdefault", "testinfo")
+	app.appendFlagDefaults(flgs)
+	if !strings.Contains(app.FlagDefaults, "testdefault") || !strings.Contains(app.FlagDefaults, "testinfo") {
+		t.Fatal(app.FlagDefaults)
+	}
+}
+
+func TestHelp(t *testing.T) {
+	app := NewApplication(NewApplicationConfig())
+	output := bytes.NewBuffer(nil)
+	app.Stdout = output
+	module := newTestModule("test")
+	module.FlagSet().String("testfield", "", "testuseage")
+	app.PrintModuleHelp(module)
+	out := output.String()
+	if out != "" {
+		t.Fatal(out)
+	}
+}
 func init() {
 	Config.Name = "Herb-go cli tool"
 	Config.Cmd = "herb-go"
 	Config.Version = "0.1"
 	Config.IntroTemplate = "{{.Config.Name}} Version {{.Config.Version}}\nCli tool to create herb-go app.\nType \"{{.Config.Cmd}} {{.HelpModuleCmd}}\" to get help."
-
 }

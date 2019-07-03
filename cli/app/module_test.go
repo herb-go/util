@@ -17,10 +17,10 @@ func (m *testModule) ID() string {
 func (m *testModule) Cmd() string {
 	return m.cmd
 }
-func (m *testModule) Help() string {
+func (m *testModule) Help(a *Application) string {
 	return m.help
 }
-func (m *testModule) Desc() string {
+func (m *testModule) Desc(a *Application) string {
 	return m.desc
 }
 func (m *testModule) Exec(a *Application, args []string) error {
@@ -36,6 +36,7 @@ func newTestModule(cmd string) *testModule {
 	}
 }
 func TestBasicModule(t *testing.T) {
+
 	type testBasicModule struct {
 		BasicModule
 	}
@@ -43,13 +44,13 @@ func TestBasicModule(t *testing.T) {
 	if tm.Cmd() != "" {
 		t.Fatal(tm)
 	}
-	if tm.Desc() != "" {
+	if tm.Desc(nil) != "" {
 		t.Fatal(tm)
 	}
 	if tm.ID() != "" {
 		t.Fatal(tm)
 	}
-	if tm.Help() != "" {
+	if tm.Help(nil) != "" {
 		t.Fatal(tm)
 	}
 	if err := tm.Exec(NewApplication(nil), nil); err != nil {
