@@ -69,10 +69,12 @@ func (a *Application) appendFlagDefaults(flgs *flag.FlagSet) {
 func (a *Application) PrintModuleHelp(m Module) {
 	a.FlagDefaults = ""
 	a.ShowIntro()
-	a.Println(m.Help(a))
+	a.Print(m.Help(a))
 	a.appendFlagDefaults(m.FlagSet())
-	a.Println("Options:")
-	a.Println(a.FlagDefaults)
+	if a.FlagDefaults != "" {
+		a.Println("Options:")
+		a.Println(a.FlagDefaults)
+	}
 }
 func (a *Application) Setenv(key string, value string) error {
 	return a.Env.Setenv(key, value)
@@ -83,6 +85,9 @@ func (a *Application) Run() {
 	var err error
 	if len(a.Args) < 2 {
 		err = a.ShowIntro()
+		if err == nil {
+			a.Printf("Type \"%s %s\" to get help.\n", a.Config.Cmd, HelpModuleCmd)
+		}
 	} else {
 		cmd = a.Args[1]
 		args = a.Args[2:]

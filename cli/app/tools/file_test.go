@@ -15,7 +15,7 @@ func TestFile(t *testing.T) {
 	defer func() {
 		os.RemoveAll(tmpdir)
 	}()
-	result, err := FileExists(path.Join(tmpdir, "notexists"))
+	result, err := FileExists(tmpdir, "notexists")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -23,11 +23,33 @@ func TestFile(t *testing.T) {
 		t.Fatal(result)
 	}
 	ioutil.WriteFile(path.Join(tmpdir, "file"), []byte("123"), 0700)
-	result, err = FileExists(path.Join(tmpdir, "file"))
+	result, err = FileExists(tmpdir, "file")
 	if err != nil {
 		t.Fatal(err)
 	}
 	if !result {
 		t.Fatal(result)
 	}
+	result, err = IsFolder(tmpdir)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if !result {
+		t.Fatal(result)
+	}
+	result, err = IsFolder(tmpdir, "file")
+	if err != nil {
+		t.Fatal(err)
+	}
+	if result {
+		t.Fatal(result)
+	}
+	result, err = IsFolder(tmpdir, "notexists")
+	if err != nil {
+		t.Fatal(err)
+	}
+	if result {
+		t.Fatal(result)
+	}
+
 }
