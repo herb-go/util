@@ -2,6 +2,7 @@ package tools
 
 import (
 	"bytes"
+	"fmt"
 	"io/ioutil"
 	"os"
 	"path"
@@ -129,4 +130,18 @@ func (t *Task) ConfirmIf(a *app.Application, conditon bool) (bool, error) {
 
 func (t *Task) AddJob(jobs ...func() error) {
 	t.Jobs = append(t.Jobs, jobs...)
+}
+
+func (t *Task) ErrosIfAnyFileExists() error {
+	for k := range t.Files {
+		p := filepath.Join(t.TargetFolder, k)
+		result, err := FileExists(p)
+		if err != nil {
+			return err
+		}
+		if result {
+			return fmt.Errorf("file \"%s\" exsits,installtion fail", p)
+		}
+	}
+	return nil
 }

@@ -24,6 +24,10 @@ func TestTask(t *testing.T) {
 		"data": "data",
 	}
 	task := NewTask(path.Join("./", "testdata"), tmpdir)
+	err = task.ErrosIfAnyFileExists()
+	if err != nil {
+		t.Fatal(err)
+	}
 	err = task.Copy("/demo.txt", "/demo.txt")
 	if err != nil {
 		t.Fatal(err)
@@ -64,6 +68,10 @@ func TestTask(t *testing.T) {
 	}
 	if jobsoutput != "job1job2" {
 		t.Fatal(jobsoutput)
+	}
+	err = task.ErrosIfAnyFileExists()
+	if err == nil || !strings.Contains(err.Error(), "installtion fail") {
+		t.Fatal(err)
 	}
 }
 
