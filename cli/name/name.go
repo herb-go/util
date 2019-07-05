@@ -29,9 +29,9 @@ func (n *Name) LowerPath(filename ...string) string {
 func fieldsep(r rune) bool {
 	return r == ' ' || r == '_' || r == '-'
 }
+var  regWithParent , _ = regexp.Compile("^[a-zA-Z][/0-9a-zA-Z\\.\\s\\_\\-]*$")
 
-var regWithParent, _ = regexp.Compile("^[a-zA-Z][/0-9a-zA-Z\\s\\_\\-]*$")
-var regWithoutParent, _ = regexp.Compile("^[a-zA-Z][0-9a-zA-Z\\s\\_\\-]*$")
+var regWithoutParent , _ = regexp.Compile("^[a-zA-Z][0-9a-zA-Z\\.\\s\\_\\-]*$")
 
 func listToPascal(values ...string) string {
 	var result string
