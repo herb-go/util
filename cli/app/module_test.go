@@ -8,6 +8,7 @@ type testModule struct {
 	cmd    string
 	help   string
 	desc   string
+	group string
 	output string
 }
 
@@ -22,6 +23,9 @@ func (m *testModule) Help(a *Application) string {
 }
 func (m *testModule) Desc(a *Application) string {
 	return m.desc
+}
+func (m *testModule) Group(a *Application) string {
+	return m.group
 }
 func (m *testModule) Exec(a *Application, args []string) error {
 	if m.output != "" {
@@ -51,6 +55,9 @@ func TestBasicModule(t *testing.T) {
 		t.Fatal(tm)
 	}
 	if tm.Help(nil) != "" {
+		t.Fatal(tm)
+	}
+	if tm.Group(nil) != "" {
 		t.Fatal(tm)
 	}
 	if err := tm.Exec(NewApplication(nil), nil); err != nil {

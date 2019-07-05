@@ -112,7 +112,7 @@ func TestHelp(t *testing.T) {
 	module.FlagSet().String("testfield", "", "testuseage")
 	app.PrintModuleHelp(module)
 	out := output.String()
-	if out != "" {
+	if !strings.Contains(out , "testuseage") {
 		t.Fatal(out)
 	}
 }

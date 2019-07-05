@@ -9,6 +9,7 @@ type Module interface {
 	Cmd() string
 	Help(a *Application) string
 	Desc(a *Application) string
+	Group(a *Application) string
 	FlagSet() *flag.FlagSet
 	Exec(a *Application, args []string) error
 }
@@ -30,6 +31,10 @@ func (m *BasicModule) Help(a *Application) string {
 }
 
 func (m *BasicModule) Desc(a *Application) string {
+	return ""
+}
+
+func (m *BasicModule) Group(a *Application) string {
 	return ""
 }
 func (m *BasicModule) FlagSet() *flag.FlagSet {
