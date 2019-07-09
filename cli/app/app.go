@@ -94,6 +94,7 @@ func (a *Application) Run() {
 		m := a.Modules.Get(cmd)
 		if m == nil {
 			m = a.Modules.Get(HelpModuleCmd)
+			args=[]string{}
 		}
 		err = m.Exec(a, args)
 	}
