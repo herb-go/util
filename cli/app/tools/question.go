@@ -27,7 +27,6 @@ func NewAnswer() *Answer {
 	return &Answer{}
 }
 
-
 type Question struct {
 	Description string
 	Answers     []*Answer
@@ -100,11 +99,10 @@ func NewQuestion() *Question {
 	}
 }
 
-
-func NewTrueOrFalseQuestion(desc string)*Question {
+func NewTrueOrFalseQuestion(desc string) *Question {
 
 	return NewQuestion().
-	SetDescription(desc).
-	AddAnswer("y","Yes",true).
-	AddAnswer("n","No",true)
+		SetDescription(desc).
+		AddAnswer("y", "Yes", true).
+		AddAnswer("n", "No", false)
 }
