@@ -24,16 +24,20 @@ func TestTask(t *testing.T) {
 		"data": "data",
 	}
 	task := NewTask(path.Join("./", "testdata"), tmpdir)
-	err = task.ErrosIfAnyFileExists()
-	if err != nil {
-		t.Fatal(err)
-	}
 	err = task.Copy("/demo.txt", "/demo.txt")
 	if err != nil {
 		t.Fatal(err)
 	}
 	err = task.Render("/demo1.tmpl", "/output/demo1.txt", renderdata)
 	if err != nil {
+		t.Fatal(err)
+	}
+	err = task.ErrosIfAnyFileExists()
+	if err != nil {
+		t.Fatal(err)
+	}
+	err = task.ErrosIfAnyFileNotExists()
+	if err == nil {
 		t.Fatal(err)
 	}
 	files := task.ListFiles()
@@ -71,6 +75,10 @@ func TestTask(t *testing.T) {
 	}
 	err = task.ErrosIfAnyFileExists()
 	if err == nil || !strings.Contains(err.Error(), "installtion fail") {
+		t.Fatal(err)
+	}
+	err = task.ErrosIfAnyFileNotExists()
+	if err != nil {
 		t.Fatal(err)
 	}
 }

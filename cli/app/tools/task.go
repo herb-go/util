@@ -140,7 +140,21 @@ func (t *Task) ErrosIfAnyFileExists() error {
 			return err
 		}
 		if result {
-			return fmt.Errorf("file \"%s\" exsits,installtion fail", p)
+			return fmt.Errorf("file \"%s\" exists,installtion fail", p)
+		}
+	}
+	return nil
+}
+
+func (t *Task) ErrosIfAnyFileNotExists() error {
+	for k := range t.Files {
+		p := filepath.Join(t.TargetFolder, k)
+		result, err := FileExists(p)
+		if err != nil {
+			return err
+		}
+		if !result {
+			return fmt.Errorf("file \"%s\" does not exyst,installtion fail", p)
 		}
 	}
 	return nil
