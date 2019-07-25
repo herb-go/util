@@ -13,6 +13,7 @@ import (
 )
 
 func TestLoader(t *testing.T) {
+	util.UpdatePaths()
 	defer func() {
 		CleanLoaders()
 	}()

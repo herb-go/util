@@ -1,6 +1,7 @@
 package config
 
 import (
+	"errors"
 	"fmt"
 )
 
@@ -18,3 +19,5 @@ func NewError(configPath string, rawError error) *ConfigError {
 		RawErrror:  rawError,
 	}
 }
+
+var ErrConfigPathNotInited = errors.New("config path not inited")

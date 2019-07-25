@@ -62,12 +62,11 @@ func RegisterLoaderAndWatch(file util.FileObject, loader func(util.FileObject)) 
 	return &l
 }
 func LoadAll(files ...util.FileObject) {
+	if util.ConfigPath == "" {
+		panic(ErrConfigPathNotInited)
+	}
 	defer Lock.RUnlock()
 	Lock.RLock()
-	err := util.UpdatePaths()
-	if err != nil {
-		panic(err)
-	}
 NextLoader:
 	for _, v := range registeredLoaders {
 		if len(files) != 0 {
