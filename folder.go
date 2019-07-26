@@ -48,19 +48,19 @@ var UpdatePaths = func() error {
 		RootPath = filepath.Join(filepath.Dir(mustPath(os.Executable())), "../")
 	}
 	if ResourcesPath == "" {
-		ResourcesPath = path.Join(RootPath, "resources")
+		ResourcesPath = filepath.Join(RootPath, "resources")
 	}
 	if AppDataPath == "" {
-		AppDataPath = path.Join(RootPath, "appdata")
+		AppDataPath = filepath.Join(RootPath, "appdata")
 	}
 	if ConfigPath == "" {
-		ConfigPath = path.Join(RootPath, "config")
+		ConfigPath = filepath.Join(RootPath, "config")
 	}
 	if SystemPath == "" {
-		SystemPath = path.Join(RootPath, "system")
+		SystemPath = filepath.Join(RootPath, "system")
 	}
 	if ConstantsPath == "" {
-		ConstantsPath = path.Join(RootPath, "system", "constants")
+		ConstantsPath = filepath.Join(RootPath, "system", "constants")
 	}
 	return nil
 }
