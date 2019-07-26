@@ -14,6 +14,12 @@ var ErrAppIsInInitializingMode = errors.New("app is in initializing mode.you sho
 //ErrAppInitialized error raised if app is initialized
 var ErrAppInitialized = errors.New("app is Initialized,should not be initialized again")
 
+//ErrAppInTestingMode error raised if app is in testing mode
+var ErrAppInTestingMode = errors.New("app is in testing mode")
+
+//ErrAppNotInTestingMode error raised if app is in testing mode
+var ErrAppNotInTestingMode = errors.New("app is not in testing mode")
+
 //ErrInitializingEnvIsSet err raied if initializing env is set.
 //Use ErrInitializingEnvIsSet("envname") to create new error.
 type ErrInitializingEnvIsSet string
@@ -38,6 +44,20 @@ type DevelopmentConfig struct {
 	initializers         []*initializer
 	initializingEnvs     map[string]bool
 	usedInitializingEnvs map[string]string
+}
+
+//TestingOrPanic panic if Testing is false
+func (c *DevelopmentConfig) TestingOrPanic() {
+	if !c.Testing {
+		panic(ErrAppNotInTestingMode)
+	}
+}
+
+//NotTestingOrPanic panic if Testing is true
+func (c *DevelopmentConfig) NotTestingOrPanic() {
+	if c.Testing {
+		panic(ErrAppInTestingMode)
+	}
 }
 
 //InitializeAndPanicIfNeeded initialize and panic if Initializing is true
