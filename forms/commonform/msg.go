@@ -5,19 +5,19 @@ import (
 )
 
 //MsgRequired message that shows field is required
-var MsgRequired = translate.NewMessage("herbgo.form", "%[1]s is required")
+var MsgRequired = translate.NewMessage("herbgo.form", "%[1]s is required.")
 
 //MsgDuplicated messages that shows field is  duplicated.
 var MsgDuplicated = translate.NewMessage("herbgo.form", " %[1]s is duplicated.")
 
 //MsgInvalide messages that shows field is  invalid.
-var MsgInvalide = translate.NewMessage("herbgo.form", " %[1]s is invalid")
+var MsgInvalide = translate.NewMessage("herbgo.form", " %[1]s is invalid.")
 
 //MsgNotMatch messages that shows field is  not match.
-var MsgNotMatch = translate.NewMessage("herbgo.form", "%[1]s is not match")
+var MsgNotMatch = translate.NewMessage("herbgo.form", "%[1]s is not match.")
 
 //MsgIncorrect messages that shows field is  incorrect.
-var MsgIncorrect = translate.NewMessage("herbgo.form", "%[1]s is incorrect")
+var MsgIncorrect = translate.NewMessage("herbgo.form", "%[1]s is incorrect.")
 
 //NewFormatWrongMsg create new message that shows field format wrong with given format.
 func NewFormatWrongMsg(format string) *translate.TemplateMessage {
