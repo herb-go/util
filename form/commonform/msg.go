@@ -1,7 +1,7 @@
 package commonform
 
 import (
-	"github.com/herb-go/herb/translate"
+	"github.com/herb-go/herb/ui"
 )
 
 //MsgRequired message that shows field is required

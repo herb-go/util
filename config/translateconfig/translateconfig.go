@@ -8,7 +8,7 @@ import (
 
 	"github.com/BurntSushi/toml"
 
-	"github.com/herb-go/herb/translate"
+	"github.com/herb-go/herb/ui"
 )
 
 //Config translate config

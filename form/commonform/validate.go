@@ -3,7 +3,7 @@ package commonform
 import (
 	"strconv"
 
-	"github.com/herb-go/herb/translate"
+	"github.com/herb-go/herb/ui"
 	"github.com/herb-go/util/form"
 )
 

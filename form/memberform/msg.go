@@ -1,6 +1,6 @@
 package memberform
 
-import "github.com/herb-go/herb/translate"
+import "github.com/herb-go/herb/ui"
 
 //MsgIncorrectUsernameOrPassword message that shows incorrect username or password.
 var MsgIncorrectUsernameOrPassword = translate.NewMessage("herbgo.member", "Incorrect username or password.")

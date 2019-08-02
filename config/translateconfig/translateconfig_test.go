@@ -5,7 +5,7 @@ import (
 	"runtime"
 	"testing"
 
-	"github.com/herb-go/herb/translate"
+	"github.com/herb-go/herb/ui"
 )
 
 func getPath() string {
