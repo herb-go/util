@@ -9,7 +9,7 @@ import (
 
 //SetTranslatedFieldLabels set translated field labels to form.
 func SetTranslatedFieldLabels(form form.TranslateableForm, module string, labels map[string]string) {
-	form.SetFieldLabelsCollection(translate.GetMessages(form.Lang(), "app").Collection((labels)))
+	form.SetFieldLabelsCollection(ui.GetMessages(form.Lang(), "app").Collection((labels)))
 }
 
 //ValidateStringLength validate string length

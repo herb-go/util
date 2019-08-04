@@ -22,10 +22,10 @@ func TestConfig(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if translate.Lang != "testlang" {
-		t.Fatal(translate.Lang)
+	if ui.Lang != "testlang" {
+		t.Fatal(ui.Lang)
 	}
-	message := translate.GetIn("zh", "testmodule", "test")
+	message := ui.GetIn("zh", "testmodule", "test")
 	if message != "translated test" {
 		t.Fatal(message)
 	}

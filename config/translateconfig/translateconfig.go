@@ -19,7 +19,7 @@ type Config struct {
 
 // Apply apply translate config
 func (c *Config) Apply(path string) error {
-	translate.Lang = c.Language
+	ui.Lang = c.Language
 	for _, v := range c.Avaliable {
 		langpath := filepath.Join(path, v)
 		s, err := os.Stat(langpath)
@@ -38,7 +38,7 @@ func (c *Config) Apply(path string) error {
 			}
 			if !f.IsDir() {
 				if strings.HasSuffix(path, ".toml") {
-					m := translate.NewMessages()
+					m := ui.NewMessages()
 					base := filepath.Base(path)
 					modulename := base[:len(base)-5]
 					data, err := ioutil.ReadFile(path)
@@ -49,7 +49,7 @@ func (c *Config) Apply(path string) error {
 					if err != nil {
 						return err
 					}
-					translate.DefaultTranslations.SetMessages(v, modulename, m)
+					ui.DefaultTranslations.SetMessages(v, modulename, m)
 				}
 			}
 			return nil
