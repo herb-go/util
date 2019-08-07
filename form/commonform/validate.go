@@ -25,7 +25,7 @@ func ValidateStringLength(form validator.Fields, value string, field string, min
 		if l < min {
 			form.AddErrorf(field, NewTooShortMsg(strconv.Itoa(min)).Translate(form.Lang()))
 		} else if l > max {
-			form.AddErrorf(field, NewTooLongMsg(strconv.Itoa(min)).Translate(form.Lang()))
+			form.AddErrorf(field, NewTooLongMsg(strconv.Itoa(max)).Translate(form.Lang()))
 		}
 	}
 }
@@ -36,7 +36,7 @@ func ValidateIntRange(form validator.Fields, value int, field string, min int, m
 		form.AddErrorf(field, NewTooSmallMsg(strconv.Itoa(min)).Translate(form.Lang()))
 
 	} else if value > max {
-		form.AddErrorf(field, NewTooBigMsg(strconv.Itoa(min)).Translate(form.Lang()))
+		form.AddErrorf(field, NewTooBigMsg(strconv.Itoa(max)).Translate(form.Lang()))
 	}
 }
 
@@ -96,5 +96,26 @@ func ValidateRequiredFloat64(form validator.Fields, value float64, field string)
 func ValidateRequiredTime(form validator.Fields, value time.Time, field string) {
 	if value.IsZero() {
 		form.AddErrorf(field, MsgRequired.Translate(form.Lang()))
+	}
+}
+
+//ValidateStringInList validate required string field
+func ValidateStringInList(form validator.Fields, value string, field string, l *StringList) {
+	if !l.Has(value) {
+		form.AddErrorf(field, MsgInvalide.Translate(form.Lang()))
+	}
+}
+
+//ValidateIntInList validate required string field
+func ValidateIntInList(form validator.Fields, value int, field string, l *IntList) {
+	if !l.Has(value) {
+		form.AddErrorf(field, MsgInvalide.Translate(form.Lang()))
+	}
+}
+
+//ValidateInt64InList validate required string field
+func ValidateInt64InList(form validator.Fields, value int64, field string, l *Int64List) {
+	if !l.Has(value) {
+		form.AddErrorf(field, MsgInvalide.Translate(form.Lang()))
 	}
 }
