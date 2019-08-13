@@ -22,16 +22,16 @@ type Name struct {
 }
 
 func (n *Name) LowerPath(filename ...string) string {
-	fmt.Println(path.Join(n.ParentsList...))
 	return path.Join(path.Join(n.ParentsList...), n.Lower, path.Join(filename...))
 }
 
 func fieldsep(r rune) bool {
 	return r == ' ' || r == '_' || r == '-'
 }
-var  regWithParent , _ = regexp.Compile("^[a-zA-Z][/0-9a-zA-Z\\.\\s\\_\\-]*$")
 
-var regWithoutParent , _ = regexp.Compile("^[a-zA-Z][0-9a-zA-Z\\.\\s\\_\\-]*$")
+var regWithParent, _ = regexp.Compile("^[a-zA-Z][/0-9a-zA-Z\\.\\s\\_\\-]*$")
+
+var regWithoutParent, _ = regexp.Compile("^[a-zA-Z][0-9a-zA-Z\\.\\s\\_\\-]*$")
 
 func listToPascal(values ...string) string {
 	var result string
