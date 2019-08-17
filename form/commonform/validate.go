@@ -1,6 +1,7 @@
 package commonform
 
 import (
+	"reflect"
 	"strconv"
 	"time"
 
@@ -52,7 +53,7 @@ func ValidateInt64Range(form validator.Fields, value int64, field string, min in
 
 //ValidateRequiredPointer validate required pointer field
 func ValidateRequiredPointer(form validator.Fields, value interface{}, field string) {
-	if value == nil {
+	if value == nil || reflect.ValueOf(value).IsNil() {
 		form.AddErrorf(field, MsgRequired.Translate(form.Lang()))
 	}
 }
