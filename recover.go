@@ -18,7 +18,18 @@ func Recover() {
 		err := r.(error)
 		LogError(err)
 	}
+}
 
+func RecoverAndExit() {
+	if r := recover(); r != nil {
+		s, ok := r.(string)
+		if ok {
+			LogError(errors.New(s))
+		}
+		err := r.(error)
+		LogError(err)
+		os.Exit(1)
+	}
 }
 
 var Logger = log.New(os.Stderr, log.Prefix(), log.Flags())
