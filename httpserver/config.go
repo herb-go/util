@@ -34,6 +34,47 @@ type Config struct {
 	TLSKeyPath string
 }
 
+//IsEmpty check if config is empty
+func (c *Config) IsEmpty() bool {
+	if c == nil {
+		return true
+	}
+	if c.Addr != "" {
+		return false
+	}
+	if c.Net != "" {
+		return false
+	}
+	if c.BaseURL != "" {
+		return false
+	}
+	if c.ReadTimeoutInSecond != 0 {
+		return false
+	}
+	if c.ReadHeaderTimeoutInSecond != 0 {
+		return false
+	}
+	if c.WriteTimeoutInSecond != 0 {
+		return false
+	}
+	if c.IdleTimeoutInSecond != 0 {
+		return false
+	}
+	if c.MaxHeaderBytes != 0 {
+		return false
+	}
+	if !c.TLS {
+		return false
+	}
+	if c.TLSCertPath != "" {
+		return false
+	}
+	if c.TLSKeyPath != "" {
+		return false
+	}
+	return true
+}
+
 //Server create http server with config.
 func (c *Config) Server() *http.Server {
 	server := &http.Server{
