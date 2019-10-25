@@ -37,6 +37,7 @@ type Config struct {
 //Server create http server with config.
 func (c *Config) Server() *http.Server {
 	server := &http.Server{
+		Addr:              c.Addr,
 		ReadTimeout:       time.Duration(c.ReadTimeoutInSecond) * time.Second,
 		ReadHeaderTimeout: time.Duration(c.ReadHeaderTimeoutInSecond) * time.Second,
 		WriteTimeout:      time.Duration(c.WriteTimeoutInSecond) * time.Second,
