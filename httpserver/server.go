@@ -5,23 +5,27 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/herb-go/herb/server"
 	"github.com/herb-go/util"
 )
 
 //MustListenAndServeHTTP listen and serve http server with given server,config and handler.
 //Panic if any error raised.
-func MustListenAndServeHTTP(server *http.Server, config *Config, app http.Handler) {
+func MustListenAndServeHTTP(s *http.Server, config *server.HTTPConfig, app http.Handler) {
 	go func() {
 		var err error
-		l := config.MustListen()
+		l, err := config.Listen()
+		if err != nil {
+			panic(err)
+		}
 		defer l.Close()
-		server.Handler = app
+		s.Handler = app
 		if config.TLS {
 			util.Println("Listening https " + l.Addr().String())
-			err = server.ServeTLS(l, config.TLSCertPath, config.TLSKeyPath)
+			err = s.ServeTLS(l, config.TLSCertPath, config.TLSKeyPath)
 		} else {
 			util.Println("Listening " + l.Addr().String())
-			err = server.Serve(l)
+			err = s.Serve(l)
 		}
 		if err != nil && err != http.ErrServerClosed {
 			panic(err)
