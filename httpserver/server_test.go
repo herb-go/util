@@ -11,12 +11,12 @@ import (
 	"testing"
 	"time"
 
-	"github.com/herb-go/herb/server"
+	"github.com/herb-go/herb/service/httpservice"
 	"github.com/herb-go/util"
 )
 
 func TestConfig(t *testing.T) {
-	config := &server.HTTPConfig{}
+	config := &httpservice.Config{}
 	config.Net = "tcp"
 	config.Addr = httpaddr
 }
@@ -26,7 +26,7 @@ func TestHttp(t *testing.T) {
 	defer func() {
 		util.Logger.SetOutput(os.Stderr)
 	}()
-	config := &server.HTTPConfig{}
+	config := &httpservice.Config{}
 	config.Net = "tcp"
 	config.Addr = httpaddr
 	server := config.Server()
@@ -89,7 +89,7 @@ func TestHttp(t *testing.T) {
 }
 
 func TestHttps(t *testing.T) {
-	config := &server.HTTPConfig{}
+	config := &httpservice.Config{}
 	config.Net = "tcp"
 	config.Addr = httpaddr
 	config.TLS = true

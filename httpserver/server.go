@@ -5,13 +5,13 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/herb-go/herb/server"
+	"github.com/herb-go/herb/service/httpservice"
 	"github.com/herb-go/util"
 )
 
 //MustListenAndServeHTTP listen and serve http server with given server,config and handler.
 //Panic if any error raised.
-func MustListenAndServeHTTP(s *http.Server, config *server.HTTPConfig, app http.Handler) {
+func MustListenAndServeHTTP(s *http.Server, config *httpservice.Config, app http.Handler) {
 	go func() {
 		var err error
 		l, err := config.Listen()
