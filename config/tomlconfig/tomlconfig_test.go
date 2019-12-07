@@ -10,6 +10,7 @@ import (
 
 func TestTOMLConfig(t *testing.T) {
 	var data = `
+	#comment
 		Data="1234"
 	`
 	type Data struct {

@@ -1,11 +1,8 @@
 package config
 
 import (
-	"bytes"
-	"encoding/json"
-	"io"
-	"strings"
-
+	"github.com/herb-go/herbconfig/configloader"
+	_ "github.com/herb-go/herbconfig/configloader/drivers/jsonconfig" //jsonconfig
 	"github.com/herb-go/util"
 )
 
@@ -16,7 +13,7 @@ func Load(drivername string, file util.FileObject, v interface{}) error {
 	if err != nil {
 		return NewError(file.ID(), err)
 	}
-	err = Unmarshal(drivername, bs, v)
+	err = configloader.LoadConfig(drivername, bs, v)
 	if err != nil {
 		return NewError(file.ID(), err)
 	}
@@ -33,22 +30,6 @@ func MustLoadJSON(file util.FileObject, v interface{}) {
 	}
 }
 
-var jsonUnmarshal = func(data []byte, v interface{}) error {
-	var err error
-	r := bytes.NewBuffer(data)
-	var bytes = []byte{}
-	var line string
-	for err != io.EOF {
-		line, err = r.ReadString(10)
-		line = strings.TrimSpace(line)
-		if len(line) > 2 && line[0:2] == "//" {
-			continue
-		}
-		bytes = append(bytes, []byte(line)...)
-	}
-	return json.Unmarshal(bytes, v)
-}
-
 func init() {
-	RegisterUnmarshaler(UnmarshalerNameJSON, jsonUnmarshal)
+
 }

@@ -4,6 +4,7 @@ import (
 	"bytes"
 
 	"github.com/BurntSushi/toml"
+	_ "github.com/herb-go/herbconfig/configloader/drivers/tomlconfig" //tomlconfig
 	"github.com/herb-go/util"
 	"github.com/herb-go/util/config"
 )
@@ -43,12 +44,4 @@ func MustSave(file util.FileObject, v interface{}) {
 	if err != nil {
 		panic(err)
 	}
-}
-
-var tomlUnmarshal = func(data []byte, v interface{}) error {
-	return toml.Unmarshal(data, v)
-}
-
-func init() {
-	config.RegisterUnmarshaler(UnmarshalerNameTOML, tomlUnmarshal)
 }
