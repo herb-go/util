@@ -54,7 +54,6 @@ func RegisterLoaderAndWatch(file util.FileObject, loader func(util.FileObject)) 
 	}
 	l := Loader{File: file, Loader: loader, Position: position}
 	l.Preload = Watcher.Watch(file, func() {
-		fmt.Println("reload")
 		loader(file)
 	})
 	registeredLoaders = append(registeredLoaders, &l)
