@@ -1,9 +1,6 @@
 package tomlconfig
 
 import (
-	"bytes"
-
-	"github.com/BurntSushi/toml"
 	_ "github.com/herb-go/herbconfig/configloader/drivers/tomlconfig" //tomlconfig
 	"github.com/herb-go/util"
 	"github.com/herb-go/util/config"
@@ -28,20 +25,20 @@ func MustLoad(file util.FileObject, v interface{}) {
 
 //Save save interface to toml file
 //Return any error if rasied
-func Save(file util.FileObject, v interface{}) error {
-	buffer := bytes.NewBuffer([]byte{})
-	err := toml.NewEncoder(buffer).Encode(v)
-	if err != nil {
-		return err
-	}
-	return util.WriteFile(file, buffer.Bytes(), util.DefaultFileMode)
-}
+// func Save(file util.FileObject, v interface{}) error {
+// 	buffer := bytes.NewBuffer([]byte{})
+// 	err := toml.NewEncoder(buffer).Encode(v)
+// 	if err != nil {
+// 		return err
+// 	}
+// 	return util.WriteFile(file, buffer.Bytes(), util.DefaultFileMode)
+// }
 
 //MustSave save interface to toml file
 //Panic if  any error rasied
-func MustSave(file util.FileObject, v interface{}) {
-	err := Save(file, v)
-	if err != nil {
-		panic(err)
-	}
-}
+// func MustSave(file util.FileObject, v interface{}) {
+// 	err := Save(file, v)
+// 	if err != nil {
+// 		panic(err)
+// 	}
+// }
