@@ -4,14 +4,16 @@ import (
 	"fmt"
 	"sync"
 
+	"github.com/herb-go/herbconfig/configuration"
+
 	"github.com/herb-go/util"
 )
 
 var Debug = false
 
 type Loader struct {
-	File     util.FileObject
-	Loader   func(util.FileObject)
+	File     configuration.Configuration
+	Loader   func(configuration.Configuration)
 	Position string
 	Preload  func()
 }
@@ -36,7 +38,7 @@ func CleanLoaders() {
 	registeredLoaders = []*Loader{}
 }
 
-func RegisterLoader(file util.FileObject, loader func(file util.FileObject)) {
+func RegisterLoader(file configuration.Configuration, loader func(file configuration.Configuration)) {
 	var position string
 	lines := util.GetStackLines(8, 9)
 	if len(lines) == 1 {
@@ -46,31 +48,34 @@ func RegisterLoader(file util.FileObject, loader func(file util.FileObject)) {
 	registeredLoaders = append(registeredLoaders, &l)
 }
 
-func RegisterLoaderAndWatch(file util.FileObject, loader func(util.FileObject)) *Loader {
+func RegisterLoaderAndWatch(file configuration.Configuration, loader func(configuration.Configuration)) *Loader {
 	var position string
 	lines := util.GetStackLines(8, 9)
 	if len(lines) == 1 {
 		position = fmt.Sprintf("%s\r\n", lines[0])
 	}
 	l := Loader{File: file, Loader: loader, Position: position}
-	l.Preload = Watcher.Watch(file, func() {
-		loader(file)
-	})
+	l.Preload = func() {
+		WatcherManager.Watch(file, func() {
+			loader(file)
+		})
+	}
 	registeredLoaders = append(registeredLoaders, &l)
 
 	return &l
 }
-func LoadAll(files ...util.FileObject) {
+func LoadAll(files ...configuration.Configuration) {
 	if util.ConfigPath == "" {
 		panic(ErrConfigPathNotInited)
 	}
 	defer Lock.RUnlock()
 	Lock.RLock()
+	util.Must(WatcherManager.Start())
 NextLoader:
 	for _, v := range registeredLoaders {
 		if len(files) != 0 {
 			for _, configfile := range files {
-				if util.IsSameFile(v.File, configfile) {
+				if configuration.IsSame(v.File, configfile) {
 					v.Load()
 					continue NextLoader
 				}

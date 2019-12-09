@@ -1,13 +1,12 @@
 package config
 
 import (
-	"html"
 	"io/ioutil"
-	"net/url"
 	"os"
-	"sync"
 	"testing"
 	"time"
+
+	"github.com/herb-go/herbconfig/configuration"
 
 	"github.com/herb-go/util"
 )
@@ -20,23 +19,24 @@ func TestLoader(t *testing.T) {
 	CleanLoaders()
 	var jdata = `//comment
 	{"Data":"12345"}`
-	RegisterLoader(util.FileObjectText(jdata), func(file util.FileObject) {
+	RegisterLoader(configuration.Text(jdata), func(file configuration.Configuration) {
 
 	})
 	LoadAll()
 }
 
 func TestNamedLoader(t *testing.T) {
+	util.UpdatePaths()
 	defer func() {
 		CleanLoaders()
 	}()
 	CleanLoaders()
 	var jdata = `//comment
 	{"Data":"12345"}`
-	RegisterLoader(util.FileObjectText(jdata), func(file util.FileObject) {
+	RegisterLoader(configuration.Text(jdata), func(file configuration.Configuration) {
 
 	})
-	LoadAll(util.FileObjectText(jdata))
+	LoadAll(configuration.Text(jdata))
 }
 
 func TestWatcher(t *testing.T) {
@@ -56,29 +56,31 @@ func TestWatcher(t *testing.T) {
 	util.RootPath = tmpdir
 	util.UpdatePaths()
 	file := util.RootFile("test.toml")
-	err = util.WriteFile(file, []byte("test"), 0700)
+	err = ioutil.WriteFile(file.AbsolutePath(), []byte("test"), 0700)
 	if err != nil {
 		t.Fatal(err)
 	}
+	time.Sleep(time.Second)
+
 	go func() {
-		RegisterLoaderAndWatch(file, func(file util.FileObject) {
-			d, err := util.ReadFile(file)
+		RegisterLoaderAndWatch(file, func(file configuration.Configuration) {
+			d, err := configuration.Read(file)
 			if err != nil {
 				t.Fatal(err)
 			}
 			data = string(d)
 		})
-		RegisterLoaderAndWatch(file, func(file util.FileObject) {
-			d, err := util.ReadFile(file)
+		RegisterLoaderAndWatch(file, func(file configuration.Configuration) {
+			d, err := configuration.Read(file)
 			if err != nil {
 				t.Fatal(err)
 			}
 			data1 = string(d)
 		})
-		RegisterLoaderAndWatch(util.FileObjectText("test"), func(file util.FileObject) {
+		RegisterLoaderAndWatch(configuration.Text("test"), func(file configuration.Configuration) {
 		})
 		LoadAll()
-		err = util.WriteFile(file, []byte("test1"), 0700)
+		err = ioutil.WriteFile(file.AbsolutePath(), []byte("test1"), 0700)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -90,16 +92,16 @@ func TestWatcher(t *testing.T) {
 	if data1 != "test1" {
 		t.Fatal(data)
 	}
-	Watcher.Close()
+	util.Must(WatcherManager.Stop())
 
 	defer func() {
-		err := Watcher.Start()
+		err := WatcherManager.Start()
 		if err != nil {
 			t.Fatal(err)
 		}
 	}()
 
-	err = util.WriteFile(file, []byte("test2"), 0700)
+	err = ioutil.WriteFile(file.AbsolutePath(), []byte("test2"), 0700)
 	time.Sleep(time.Second)
 	if data != "test1" {
 		t.Fatal(data)
@@ -109,104 +111,34 @@ func TestWatcher(t *testing.T) {
 	}
 }
 
-type testfile struct {
-	util.File
-	Data []byte
-	E    chan int
-	C    chan int
-}
+// type testfile struct {
+// 	configuration.File
+// 	Data []byte
+// 	E    chan int
+// 	C    chan int
+// }
 
-func (f *testfile) ReadRaw() ([]byte, error) {
-	return f.Data, nil
-}
+// func (f *testfile) ReadRaw() ([]byte, error) {
+// 	return f.Data, nil
+// }
 
-func (f *testfile) WriteRaw(data []byte, perm os.FileMode) error {
-	f.Data = data
-	return nil
-}
+// func (f *testfile) AbsolutePath() string {
+// 	return ""
+// }
+// func (f *testfile) ID() string {
+// 	u := url.URL{
+// 		Scheme: "testfile",
+// 		Host:   "local",
+// 		Path:   html.EscapeString(string(f.File)),
+// 	}
+// 	return u.String()
+// }
 
-func (f *testfile) AbsolutePath() string {
-	return ""
-}
-func (f *testfile) ID() string {
-	u := url.URL{
-		Scheme: "testfile",
-		Host:   "local",
-		Path:   html.EscapeString(string(f.File)),
-	}
-	return u.String()
-}
-func (f *testfile) Watcher() util.FileWatcher {
-	return func(callback func()) (unwatcher func()) {
-		go func() {
-			for {
-				select {
-				case <-f.E:
-					go callback()
-				case <-f.C:
-					return
-				}
-			}
-		}()
-		return func() {
-			close(f.C)
-		}
-	}
-}
-func newTestFile(name string) *testfile {
-	return &testfile{
-		File: util.File(name),
-		Data: []byte{},
-		E:    make(chan int, 2),
-		C:    make(chan int),
-	}
-}
-func TestUnwatch(t *testing.T) {
-	var data string
-	MustResetWatcher()
-	defer func() {
-		MustResetWatcher()
-	}()
-	file := newTestFile("test")
-	err := util.WriteFile(file, []byte("test"), util.DefaultFileMode)
-	if err != nil {
-		t.Fatal(err)
-	}
-	wg := sync.WaitGroup{}
-	wg.Add(1)
-
-	RegisterLoaderAndWatch(file, func(file util.FileObject) {
-		d, err := util.ReadFile(file)
-		if err != nil {
-			t.Fatal(err)
-		}
-		data = string(d)
-		wg.Done()
-	})
-	LoadAll()
-	wg.Wait()
-	if data != "test" {
-		t.Fatal(data)
-	}
-	wg.Add(1)
-	err = util.WriteFile(file, []byte("test1"), util.DefaultFileMode)
-	if err != nil {
-		t.Fatal(err)
-	}
-	file.E <- 0
-	wg.Wait()
-	if data != "test1" {
-		t.Fatal(data)
-	}
-	MustResetWatcher()
-	err = util.WriteFile(file, []byte("test2"), util.DefaultFileMode)
-	if err != nil {
-		t.Fatal(err)
-	}
-	wg.Add(1)
-
-	file.E <- 0
-	if data != "test1" {
-		t.Fatal(data)
-	}
-}
+// func newTestFile(name string) *testfile {
+// 	return &testfile{
+// 		File: configuration.File(name),
+// 		Data: []byte{},
+// 		E:    make(chan int, 2),
+// 		C:    make(chan int),
+// 	}
+// }

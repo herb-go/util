@@ -1,8 +1,11 @@
 package config
 
-import "testing"
-import "github.com/herb-go/util"
-import "strings"
+import (
+	"strings"
+	"testing"
+
+	"github.com/herb-go/herbconfig/configuration"
+)
 
 func TestJSON(t *testing.T) {
 	type DataStruct struct {
@@ -11,7 +14,7 @@ func TestJSON(t *testing.T) {
 	var jdata = `//comment
 	{"Data":"12345"}`
 	var data = &DataStruct{}
-	MustLoadJSON(util.FileObjectText(jdata), data)
+	MustLoadJSON(configuration.Text(jdata), data)
 	if data.Data != "12345" {
 		t.Fatal(data)
 	}
@@ -24,10 +27,10 @@ func TestJSON(t *testing.T) {
 				t.Fatal(r)
 			}
 			err := r.(error)
-			if !strings.Contains(err.Error(), util.FileObjectText(wrongdata).ID()) {
+			if !strings.Contains(err.Error(), configuration.Text(wrongdata).ID()) {
 				t.Fatal(err)
 			}
 		}()
-		MustLoadJSON(util.FileObjectText(wrongdata), data)
+		MustLoadJSON(configuration.Text(wrongdata), data)
 	}()
 }

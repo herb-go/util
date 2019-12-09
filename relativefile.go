@@ -4,8 +4,9 @@ import (
 	"html"
 	"io/ioutil"
 	"net/url"
-	"os"
 	"path"
+
+	"github.com/herb-go/herbconfig/configuration"
 )
 
 type RelativeFileLocation string
@@ -42,9 +43,6 @@ func (f *RelativeFile) ReadRaw() ([]byte, error) {
 	return ioutil.ReadFile(f.AbsolutePath())
 }
 
-func (f *RelativeFile) WriteRaw(data []byte, perm os.FileMode) error {
-	return ioutil.WriteFile(f.AbsolutePath(), data, perm)
-}
 func (f *RelativeFile) ID() string {
 	u := url.URL{
 		Scheme: "relative",
@@ -52,10 +50,6 @@ func (f *RelativeFile) ID() string {
 		Path:   html.EscapeString(f.Path),
 	}
 	return u.String()
-}
-
-func (f *RelativeFile) Watcher() FileWatcher {
-	return nil
 }
 
 func NewRelativeFile() *RelativeFile {
@@ -105,7 +99,7 @@ func AppDataFile(filepath ...string) *RelativeFile {
 }
 
 func registerRelativeFileCreator() {
-	RegisterFileCreator("relative", func(id string) (FileObject, error) {
+	configuration.RegisterCreator("relative", func(id string) (configuration.Configuration, error) {
 		u, err := url.Parse(id)
 		if err != nil {
 			return nil, err
