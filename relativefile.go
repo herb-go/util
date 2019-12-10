@@ -6,7 +6,7 @@ import (
 	"net/url"
 	"path"
 
-	"github.com/herb-go/herbconfig/configuration"
+	"github.com/herb-go/herbconfig/source"
 )
 
 type RelativeFileLocation string
@@ -99,7 +99,7 @@ func AppDataFile(filepath ...string) *RelativeFile {
 }
 
 func registerRelativeFileCreator() {
-	configuration.RegisterCreator("relative", func(id string) (configuration.Configuration, error) {
+	source.RegisterCreator("relative", func(id string) (source.Source, error) {
 		u, err := url.Parse(id)
 		if err != nil {
 			return nil, err

@@ -4,7 +4,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/herb-go/herbconfig/configuration"
+	"github.com/herb-go/herbconfig/source"
 )
 
 func TestJSON(t *testing.T) {
@@ -14,7 +14,7 @@ func TestJSON(t *testing.T) {
 	var jdata = `//comment
 	{"Data":"12345"}`
 	var data = &DataStruct{}
-	MustLoadJSON(configuration.Text(jdata), data)
+	MustLoadJSON(source.Text(jdata), data)
 	if data.Data != "12345" {
 		t.Fatal(data)
 	}
@@ -27,10 +27,10 @@ func TestJSON(t *testing.T) {
 				t.Fatal(r)
 			}
 			err := r.(error)
-			if !strings.Contains(err.Error(), configuration.Text(wrongdata).ID()) {
+			if !strings.Contains(err.Error(), source.Text(wrongdata).ID()) {
 				t.Fatal(err)
 			}
 		}()
-		MustLoadJSON(configuration.Text(wrongdata), data)
+		MustLoadJSON(source.Text(wrongdata), data)
 	}()
 }

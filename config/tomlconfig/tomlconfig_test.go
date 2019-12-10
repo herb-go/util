@@ -5,7 +5,7 @@ import (
 	"os"
 	"testing"
 
-	"github.com/herb-go/herbconfig/configuration"
+	"github.com/herb-go/herbconfig/source"
 	"github.com/herb-go/util"
 )
 

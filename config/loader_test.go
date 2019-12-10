@@ -6,7 +6,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/herb-go/herbconfig/configuration"
+	"github.com/herb-go/herbconfig/source"
 
 	"github.com/herb-go/util"
 )
@@ -19,7 +19,7 @@ func TestLoader(t *testing.T) {
 	CleanLoaders()
 	var jdata = `//comment
 	{"Data":"12345"}`
-	RegisterLoader(configuration.Text(jdata), func(file configuration.Configuration) {
+	RegisterLoader(source.Text(jdata), func(file source.Source) {
 
 	})
 	LoadAll()
@@ -33,10 +33,10 @@ func TestNamedLoader(t *testing.T) {
 	CleanLoaders()
 	var jdata = `//comment
 	{"Data":"12345"}`
-	RegisterLoader(configuration.Text(jdata), func(file configuration.Configuration) {
+	RegisterLoader(source.Text(jdata), func(file source.Source) {
 
 	})
-	LoadAll(configuration.Text(jdata))
+	LoadAll(source.Text(jdata))
 }
 
 func TestWatcher(t *testing.T) {
@@ -63,21 +63,21 @@ func TestWatcher(t *testing.T) {
 	time.Sleep(time.Second)
 
 	go func() {
-		RegisterLoaderAndWatch(file, func(file configuration.Configuration) {
-			d, err := configuration.Read(file)
+		RegisterLoaderAndWatch(file, func(file source.Source) {
+			d, err := source.Read(file)
 			if err != nil {
 				t.Fatal(err)
 			}
 			data = string(d)
 		})
-		RegisterLoaderAndWatch(file, func(file configuration.Configuration) {
-			d, err := configuration.Read(file)
+		RegisterLoaderAndWatch(file, func(file source.Source) {
+			d, err := source.Read(file)
 			if err != nil {
 				t.Fatal(err)
 			}
 			data1 = string(d)
 		})
-		RegisterLoaderAndWatch(configuration.Text("test"), func(file configuration.Configuration) {
+		RegisterLoaderAndWatch(source.Text("test"), func(file source.Source) {
 		})
 		LoadAll()
 		err = ioutil.WriteFile(file.AbsolutePath(), []byte("test1"), 0700)

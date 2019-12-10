@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"sync"
 
-	"github.com/herb-go/herbconfig/configuration"
+	"github.com/herb-go/herbconfig/source"
 
 	"github.com/herb-go/util"
 )
@@ -12,8 +12,8 @@ import (
 var Debug = false
 
 type Loader struct {
-	File     configuration.Configuration
-	Loader   func(configuration.Configuration)
+	File     source.Source
+	Loader   func(source.Source)
 	Position string
 	Preload  func()
 }
@@ -38,7 +38,7 @@ func CleanLoaders() {
 	registeredLoaders = []*Loader{}
 }
 
-func RegisterLoader(file configuration.Configuration, loader func(file configuration.Configuration)) {
+func RegisterLoader(file source.Source, loader func(file source.Source)) {
 	var position string
 	lines := util.GetStackLines(8, 9)
 	if len(lines) == 1 {
@@ -48,7 +48,7 @@ func RegisterLoader(file configuration.Configuration, loader func(file configura
 	registeredLoaders = append(registeredLoaders, &l)
 }
 
-func RegisterLoaderAndWatch(file configuration.Configuration, loader func(configuration.Configuration)) *Loader {
+func RegisterLoaderAndWatch(file source.Source, loader func(source.Source)) *Loader {
 	var position string
 	lines := util.GetStackLines(8, 9)
 	if len(lines) == 1 {
@@ -64,7 +64,7 @@ func RegisterLoaderAndWatch(file configuration.Configuration, loader func(config
 
 	return &l
 }
-func LoadAll(files ...configuration.Configuration) {
+func LoadAll(files ...source.Source) {
 	if util.ConfigPath == "" {
 		panic(ErrConfigPathNotInited)
 	}
@@ -75,7 +75,7 @@ NextLoader:
 	for _, v := range registeredLoaders {
 		if len(files) != 0 {
 			for _, configfile := range files {
-				if configuration.IsSame(v.File, configfile) {
+				if source.IsSame(v.File, configfile) {
 					v.Load()
 					continue NextLoader
 				}

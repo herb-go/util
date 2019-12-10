@@ -1,17 +1,18 @@
 package config
 
 import (
-	"github.com/herb-go/herbconfig/configuration"
-	"github.com/herb-go/herbconfig/configuration/watchers/fsnotifywatcher"
+	_ "github.com/herb-go/herbconfig/loader/types/timedurationtype" //time duration type
+	"github.com/herb-go/herbconfig/source"
+	"github.com/herb-go/herbconfig/source/watchers/fsnotifywatcher"
 	"github.com/herb-go/util"
 )
 
-var WatcherManager = configuration.NewWatchManager()
+var WatcherManager = source.NewWatchManager()
 
 func InitWatcherManager() {
 }
 
 func init() {
-	util.Must(WatcherManager.RegisterWatcher(configuration.NewSchemeWatcher("file", fsnotifywatcher.NewWatcher())))
-	util.Must(WatcherManager.RegisterWatcher(configuration.NewSchemeWatcher("relative", fsnotifywatcher.NewWatcher())))
+	util.Must(WatcherManager.RegisterWatcher(source.NewSchemeWatcher("file", fsnotifywatcher.NewWatcher())))
+	util.Must(WatcherManager.RegisterWatcher(source.NewSchemeWatcher("relative", fsnotifywatcher.NewWatcher())))
 }

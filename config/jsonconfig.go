@@ -1,29 +1,29 @@
 package config
 
 import (
-	"github.com/herb-go/herbconfig/configloader"
-	_ "github.com/herb-go/herbconfig/configloader/drivers/jsonconfig" //jsonconfig
-	"github.com/herb-go/herbconfig/configuration"
+	"github.com/herb-go/herbconfig/loader"
+	_ "github.com/herb-go/herbconfig/loader/drivers/jsonconfig" //jsonconfig
+	"github.com/herb-go/herbconfig/source"
 )
 
 const UnmarshalerNameJSON = "json"
 
-func Load(drivername string, file configuration.Configuration, v interface{}) error {
-	bs, err := configuration.Read(file)
+func Load(drivername string, file source.Source, v interface{}) error {
+	bs, err := source.Read(file)
 	if err != nil {
 		return NewError(file.ID(), err)
 	}
-	err = configloader.LoadConfig(drivername, bs, v)
+	err = loader.LoadConfig(drivername, bs, v)
 	if err != nil {
 		return NewError(file.ID(), err)
 	}
 	return nil
 
 }
-func LoadJSON(file configuration.Configuration, v interface{}) error {
+func LoadJSON(file source.Source, v interface{}) error {
 	return Load(UnmarshalerNameJSON, file, v)
 }
-func MustLoadJSON(file configuration.Configuration, v interface{}) {
+func MustLoadJSON(file source.Source, v interface{}) {
 	err := LoadJSON(file, v)
 	if err != nil {
 		panic(err)
