@@ -1,9 +1,11 @@
 package util
 
 import (
+	"context"
 	"fmt"
 	"io"
 	"net"
+	"net/http"
 	"os"
 	"os/signal"
 	"sync"
@@ -96,6 +98,12 @@ func Quit() {
 var LoggerMaxLength = 5
 var LoggerIgnoredErrorsChecker = []func(error) bool{
 	func(err error) bool {
+		if err == http.ErrHandlerTimeout || err == http.ErrAbortHandler {
+			return true
+		}
+		if err == context.Canceled {
+			return true
+		}
 		oe, ok := err.(*net.OpError)
 		if ok {
 			if oe.Err == syscall.EPIPE || oe.Err == syscall.ECONNRESET {
