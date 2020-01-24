@@ -2,29 +2,29 @@ package commonconfig
 
 import "time"
 
-var defaultDateFormat = "2006-01-02"
-var defaultDatetimeFormat = "2006-01-02 15:04:05"
-var defaultTimeFormat = "15:04:05"
+var defaultDateLayout = "2006-01-02"
+var defaultDatetimeLayout = "2006-01-02 15:04:05"
+var defaultTimeLayout = "15:04:05"
 
 // TimeConfig app time config
 type TimeConfig struct {
 	//Timezone time zone.
 	Timezone string
-	//TimeFormat  format used when converting time in day.
-	TimeFormat string
-	//DateFormat  format used when converting date.
-	DateFormat string
-	//DatetimeFormata format used when converting date and time.
-	DatetimeFormat string
+	//TimeLayout  format used when converting time in day.
+	TimeLayout string
+	//DateLayout  format used when converting date.
+	DateLayout string
+	//DatetimeLayout format used when converting date and time.
+	DatetimeLayout string
 	location       *time.Location
 }
 
 //Parse time string to local time.
 //Panic if  Timezone error.
 func (c *TimeConfig) Parse(s string) (time.Time, error) {
-	format := c.DatetimeFormat
+	format := c.DatetimeLayout
 	if format == "" {
-		format = defaultDatetimeFormat
+		format = defaultDatetimeLayout
 	}
 	return time.ParseInLocation(format, s, c.loadLocation())
 }
@@ -58,10 +58,10 @@ func (c *TimeConfig) DateUnix(ts int64) string {
 //Panic if  Timezone error.
 func (c *TimeConfig) Date(t time.Time) string {
 	localTime := c.TimeInLocation(t)
-	if c.DateFormat == "" {
-		return localTime.Format(defaultDateFormat)
+	if c.DateLayout == "" {
+		return localTime.Format(defaultDateLayout)
 	}
-	return localTime.Format(c.DateFormat)
+	return localTime.Format(c.DateLayout)
 }
 
 //TimeUnix format time from unix timestamp
@@ -73,10 +73,10 @@ func (c *TimeConfig) TimeUnix(ts int64) string {
 func (c *TimeConfig) Time(t time.Time) string {
 	localTime := c.TimeInLocation(t)
 
-	if c.TimeFormat == "" {
-		return localTime.Format(defaultTimeFormat)
+	if c.TimeLayout == "" {
+		return localTime.Format(defaultTimeLayout)
 	}
-	return localTime.Format(c.TimeFormat)
+	return localTime.Format(c.TimeLayout)
 }
 
 //DatetimeUnix format date and time from unix timestamp
@@ -89,8 +89,8 @@ func (c *TimeConfig) DatetimeUnix(ts int64) string {
 func (c *TimeConfig) Datetime(t time.Time) string {
 	localTime := c.TimeInLocation(t)
 
-	if c.DatetimeFormat == "" {
-		return localTime.Format(defaultDatetimeFormat)
+	if c.DatetimeLayout == "" {
+		return localTime.Format(defaultDatetimeLayout)
 	}
-	return localTime.Format(c.DatetimeFormat)
+	return localTime.Format(c.DatetimeLayout)
 }
