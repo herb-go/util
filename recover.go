@@ -32,7 +32,9 @@ func RecoverAndExit() {
 	}
 }
 
-var Logger = log.New(os.Stderr, log.Prefix(), log.Flags())
+var ErrorLogger = func(v ...interface{}) {
+	log.Fatalln(v...)
+}
 
 func getStackLines(stack []byte, from int, to int) []string {
 	lines := strings.Split(string(stack), "\n")
@@ -56,6 +58,6 @@ func LogError(err error) {
 		output[0] = fmt.Sprintf("Panic: %s", err.Error())
 		output[0] += "\n" + lines[0]
 		copy(output[1:], lines[7:])
-		Logger.Println(strings.Join(output, "\n"))
+		ErrorLogger(strings.Join(output, "\n"))
 	}
 }

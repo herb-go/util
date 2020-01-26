@@ -87,6 +87,6 @@ NextModule:
 				output = output + "    " + wv + "\r\n"
 			}
 		}
-		Logger.Print(output)
+		ErrorLogger(output)
 	}
 }

@@ -12,9 +12,6 @@ import (
 
 //RecoverMiddleware create recover middleware with given logger.
 func RecoverMiddleware(logger *log.Logger) func(w http.ResponseWriter, req *http.Request, next http.HandlerFunc) {
-	if logger == nil {
-		logger = util.Logger
-	}
 	return func(w http.ResponseWriter, req *http.Request, next http.HandlerFunc) {
 		defer func() {
 			if r := recover(); r != nil {
@@ -32,7 +29,11 @@ func RecoverMiddleware(logger *log.Logger) func(w http.ResponseWriter, req *http
 					output[0] += "\n" + lines[0]
 					copy(output[1:], lines[7:])
 					result = strings.Join(output, "\n")
-					logger.Println(result)
+					if logger != nil {
+						logger.Println(result)
+					} else {
+						util.ErrorLogger(output)
+					}
 				}
 				if util.Debug {
 					http.Error(w, result, http.StatusInternalServerError)
