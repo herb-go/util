@@ -4,10 +4,13 @@ import (
 	"github.com/herb-go/logger"
 )
 
-type Config map[string]string
+type Config struct {
+	Loggers map[string]string
+	Formats map[string]string
+}
 
 func (c *Config) ApplyTo(l *logger.Logger, name string) error {
-	url := (*c)[name]
+	url := c.Loggers[name]
 	return logger.InitLogger(l, url)
 }
 func (c *Config) ApplyToBuiltinLoggers() error {
