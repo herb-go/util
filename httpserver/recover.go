@@ -32,7 +32,7 @@ func RecoverMiddleware(logger *log.Logger) func(w http.ResponseWriter, req *http
 					if logger != nil {
 						logger.Println(result)
 					} else {
-						util.ErrorLogger(output)
+						util.ErrorLogger(result)
 					}
 				}
 				if util.Debug {

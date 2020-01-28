@@ -32,8 +32,8 @@ func RecoverAndExit() {
 	}
 }
 
-var ErrorLogger = func(v ...interface{}) {
-	log.Fatalln(v...)
+var ErrorLogger = func(s string) {
+	log.Fatalln(s)
 }
 
 func getStackLines(stack []byte, from int, to int) []string {
