@@ -4,14 +4,24 @@ import (
 	"github.com/herb-go/logger"
 )
 
+type LoggerConfig struct {
+	URI    string
+	Config func(v interface{}) error `config:", lazyload"`
+}
 type Config struct {
-	Loggers map[string]string
+	Loggers map[string]LoggerConfig
 	Formats map[string]string
 }
 
 func (c *Config) ApplyTo(l *logger.Logger, name string) error {
-	url := c.Loggers[name]
-	return logger.InitLogger(l, url)
+	lc := c.Loggers[name]
+	return logger.InitLogger(l, lc.URI, lc.Config)
+}
+
+func (c *Config) SetFormatter(l *logger.FormatLogger, name string) error {
+	f := c.Formats[name]
+	l.SetFormatter(logger.ReplacementFormater(f))
+	return nil
 }
 func (c *Config) ApplyToBuiltinLoggers() error {
 	var err error
