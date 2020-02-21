@@ -33,7 +33,7 @@ func RecoverAndExit() {
 }
 
 var ErrorLogger = func(s string) {
-	log.Fatalln(s)
+	log.Println(s)
 }
 
 func getStackLines(stack []byte, from int, to int) []string {
