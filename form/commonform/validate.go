@@ -35,7 +35,6 @@ func ValidateStringLength(form validator.Fields, value string, field string, min
 func ValidateIntRange(form validator.Fields, value int, field string, min int, max int) {
 	if value < min {
 		form.AddErrorf(field, NewTooSmallMsg(strconv.Itoa(min)).Translate(form.Lang()))
-
 	} else if value > max {
 		form.AddErrorf(field, NewTooBigMsg(strconv.Itoa(max)).Translate(form.Lang()))
 	}
@@ -55,6 +54,35 @@ func ValidateInt64Range(form validator.Fields, value int64, field string, min in
 func ValidateRequiredPointer(form validator.Fields, value interface{}, field string) {
 	if value == nil || reflect.ValueOf(value).IsNil() {
 		form.AddErrorf(field, MsgRequired.Translate(form.Lang()))
+	}
+}
+func getLength(value interface{}) int {
+	if value != nil {
+		return reflect.Indirect(reflect.ValueOf(value)).Len()
+	}
+	return 0
+}
+
+//ValidateRequiredList validate required list field
+func ValidateRequiredList(form validator.Fields, value interface{}, field string) {
+	if getLength(value) == 0 {
+		form.AddErrorf(field, MsgRequired.Translate(form.Lang()))
+	}
+}
+
+//ValidateListLength validate list length
+func ValidateListLength(form validator.Fields, value interface{}, field string, min int, max int) {
+	l := getLength(value)
+	if min == max {
+		if l != min {
+			form.AddErrorf(field, NewWrongLengthMsg(strconv.Itoa(min)).Translate(form.Lang()))
+		}
+	} else {
+		if l < min {
+			form.AddErrorf(field, NewTooShortMsg(strconv.Itoa(min)).Translate(form.Lang()))
+		} else if l > max {
+			form.AddErrorf(field, NewTooLongMsg(strconv.Itoa(max)).Translate(form.Lang()))
+		}
 	}
 }
 
