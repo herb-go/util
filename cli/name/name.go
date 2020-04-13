@@ -77,8 +77,9 @@ func New(withparents bool, s ...string) (*Name, error) {
 		ParentsList: parentsList,
 		Parents:     strings.Join(parentsList, "/"),
 	}
-
-	n.Title = strings.ToUpper(n.Raw[0:1]) + n.Raw[1:]
+	if len(n.Raw) > 0 {
+		n.Title = strings.ToUpper(n.Raw[0:1]) + n.Raw[1:]
+	}
 	if len(s) == 0 {
 		return n, nil
 	}

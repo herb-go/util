@@ -2,6 +2,7 @@ package tools
 
 import (
 	"bytes"
+	"errors"
 	"fmt"
 	"io/ioutil"
 	"os"
@@ -13,6 +14,8 @@ import (
 	"github.com/herb-go/util"
 	"github.com/herb-go/util/cli/app"
 )
+
+var ErrUserCanceled = errors.New("error user canceled")
 
 func NewTask(srcfolder string, targetfolder string) *Task {
 	return &Task{
