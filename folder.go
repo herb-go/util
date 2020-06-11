@@ -43,6 +43,7 @@ var AppDataPath string
 var ConfigPath string
 var SystemPath string
 var ConstantsPath string
+var DefaultConfigPath string
 var UpdatePaths = func() error {
 	if RootPath == "" {
 		RootPath = filepath.Join(filepath.Dir(mustPath(os.Executable())), "../")
@@ -60,7 +61,10 @@ var UpdatePaths = func() error {
 		SystemPath = filepath.Join(RootPath, "system")
 	}
 	if ConstantsPath == "" {
-		ConstantsPath = filepath.Join(RootPath, "system", "constants")
+		ConstantsPath = filepath.Join(SystemPath, "constants")
+	}
+	if DefaultConfigPath == "" {
+		DefaultConfigPath = filepath.Join(SystemPath, "defaultconfig")
 	}
 	return nil
 }
@@ -94,6 +98,9 @@ func System(filepaths ...string) string {
 }
 func Constants(filepaths ...string) string {
 	return joinPath(ConstantsPath, filepaths...)
+}
+func DefaultConfig(filepaths ...string) string {
+	return joinPath(DefaultConfigPath, filepaths...)
 }
 func Root(filepaths ...string) string {
 	return joinPath(RootPath, filepaths...)

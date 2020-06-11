@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"errors"
 	"io/ioutil"
+	"log"
 	"os"
 	"testing"
 )
@@ -11,10 +12,10 @@ import (
 func TestRecovery(t *testing.T) {
 	var testerror = errors.New("testerror")
 	defer func() {
-		Logger.SetOutput(os.Stderr)
+		log.SetOutput(os.Stderr)
 	}()
 	output := bytes.NewBuffer([]byte{})
-	Logger.SetOutput(output)
+	log.SetOutput(output)
 	func() {
 		defer Recover()
 		panic(testerror)

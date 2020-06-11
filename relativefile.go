@@ -4,6 +4,7 @@ import (
 	"html"
 	"io/ioutil"
 	"net/url"
+	"os"
 	"path"
 
 	"github.com/herb-go/herbconfig/source"
@@ -26,6 +27,11 @@ type RelativeFile struct {
 func (f *RelativeFile) AbsolutePath() string {
 	switch f.Location {
 	case RelativeFileLocationConfig:
+		p := DefaultConfig(f.Path)
+		_, err := os.Stat(p)
+		if err == nil {
+			return p
+		}
 		return Config(f.Path)
 	case RelativeFileLocationConstants:
 		return Constants(f.Path)
