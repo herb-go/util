@@ -27,12 +27,12 @@ type RelativeFile struct {
 func (f *RelativeFile) AbsolutePath() string {
 	switch f.Location {
 	case RelativeFileLocationConfig:
-		p := DefaultConfig(f.Path)
+		p := Config(f.Path)
 		_, err := os.Stat(p)
 		if err == nil {
 			return p
 		}
-		return Config(f.Path)
+		return DefaultConfig(f.Path)
 	case RelativeFileLocationConstants:
 		return Constants(f.Path)
 	case RelativeFileLocationSystem:
