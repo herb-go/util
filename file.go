@@ -4,4 +4,4 @@ import (
 	"os"
 )
 
-var DefaultFileMode = os.FileMode(0600)
+var DefaultFileMode = os.FileMode(0660)

@@ -6,7 +6,7 @@ import (
 	"path/filepath"
 )
 
-var DefaultFolderMode = os.FileMode(0700)
+var DefaultFolderMode = os.FileMode(0770)
 var registeredFolders = [][]string{}
 
 func RegisterDataFolder(folder ...string) string {
