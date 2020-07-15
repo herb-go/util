@@ -5,12 +5,31 @@ import (
 	"sort"
 )
 
+type Stage int
+
+const (
+	StageInit   = Stage(iota)
+	StageNormal = Stage(iota)
+	StageFinish = Stage(iota)
+)
+
 type Module struct {
+	Stage    Stage
 	Name     string
 	Handler  func()
 	Position string
 }
 
+func (stage Stage) RegisterModule(Name string, handler func()) Module {
+	var position string
+	lines := GetStackLines(8, 9)
+	if len(lines) == 1 {
+		position = fmt.Sprintf("%s\r\n", lines[0])
+	}
+	m := Module{Name: Name, Stage: stage, Handler: handler, Position: position}
+	Modules = append(Modules, m)
+	return m
+}
 func (m *Module) Load() {
 	DebugPrintln("Herb-go util debug: Init module " + m.Name)
 	if m.Position != "" {
@@ -39,6 +58,9 @@ func (m modulelist) Swap(i, j int) {
 	m[i], m[j] = m[j], m[i]
 }
 func (m modulelist) Less(i, j int) bool {
+	if m[i].Stage != m[j].Stage {
+		return m[i].Stage < m[j].Stage
+	}
 	return m[i].Name < m[j].Name
 }
 
@@ -53,7 +75,7 @@ func RegisterModule(Name string, handler func()) Module {
 	if len(lines) == 1 {
 		position = fmt.Sprintf("%s\r\n", lines[0])
 	}
-	m := Module{Name: Name, Handler: handler, Position: position}
+	m := Module{Name: Name, Stage: StageNormal, Handler: handler, Position: position}
 	Modules = append(Modules, m)
 	return m
 }

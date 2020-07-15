@@ -63,4 +63,34 @@ func TestModules(t *testing.T) {
 		t.Fatal(unloadoutput)
 	}
 
+	CleanModules()
+	output = ""
+	unloadoutput = ""
+
+	StageInit.RegisterModule("3", func() {
+		output = output + "module3"
+		OnUnloadModules(func() {
+			unloadoutput = unloadoutput + "unload3"
+		})
+	})
+	RegisterModule("2", func() {
+		output = output + "module2"
+		OnUnloadModules(func() {
+			unloadoutput = unloadoutput + "unload2"
+		})
+	})
+	StageFinish.RegisterModule("1", func() {
+		output = output + "module1"
+		OnUnloadModules(func() {
+			unloadoutput = unloadoutput + "unload1"
+		})
+	})
+	InitModulesOrderByName()
+	if output != "module3module2module1" {
+		t.Fatal(output)
+	}
+	UnloadModules()
+	if unloadoutput != "unload1unload2unload3" {
+		t.Fatal(unloadoutput)
+	}
 }
