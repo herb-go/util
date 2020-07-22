@@ -56,6 +56,13 @@ func ValidateRequiredPointer(form validator.Fields, value interface{}, field str
 		form.AddErrorf(field, MsgRequired.Translate(form.Lang()))
 	}
 }
+
+//ValidateRequiredInterface validate required interface field
+func ValidateRequiredInterface(form validator.Fields, value interface{}, field string) {
+	if value == nil {
+		form.AddErrorf(field, MsgRequired.Translate(form.Lang()))
+	}
+}
 func getLength(value interface{}) int {
 	if value != nil {
 		return reflect.Indirect(reflect.ValueOf(value)).Len()
