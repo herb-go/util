@@ -166,4 +166,44 @@ func TestName(t *testing.T) {
 	if err == nil {
 		t.Fatal(err)
 	}
+
+	n, err = New(true, "test/test1.test2")
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if n.Camel != "test1Test2" {
+		t.Fatal(n.Camel)
+	}
+	if n.Lower != "test1test2" {
+		t.Fatal(n.Lower)
+	}
+	if n.LowerPath("123.txt") != "test/test1test2/123.txt" {
+		t.Fatal(n.LowerPath("123.txt"))
+	}
+	if n.LowerWithParentPath != "test/test1test2" {
+		t.Fatal(n.LowerWithParentPath)
+	}
+	if n.LowerWithParentDotSeparated != "test.test1test2" {
+		t.Fatal(n.LowerWithParentDotSeparated)
+	}
+	if n.Parents != "test" {
+		t.Fatal(n.Parents)
+	}
+	if len(n.ParentsList) != 1 {
+		t.Fatal(n.ParentsList)
+	}
+	if n.Pascal != "Test1Test2" {
+		t.Fatal(n.Pascal)
+	}
+	if n.PascalWithParents != "TestTest1Test2" {
+		t.Fatal(n.PascalWithParents)
+	}
+	if n.Raw != "test1.test2" {
+		t.Fatal(n.Raw)
+	}
+	if n.Title != "Test1.test2" {
+		t.Fatal(n.Title)
+	}
+
 }

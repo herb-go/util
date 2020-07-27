@@ -26,7 +26,7 @@ func (n *Name) LowerPath(filename ...string) string {
 }
 
 func fieldsep(r rune) bool {
-	return r == ' ' || r == '_' || r == '-'
+	return r == ' ' || r == '_' || r == '-' || r == '.'
 }
 
 var regWithParent, _ = regexp.Compile("^[a-zA-Z][/0-9a-zA-Z\\.\\s\\_\\-]*$")
