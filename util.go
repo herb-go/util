@@ -11,6 +11,7 @@ import (
 	"sync"
 	"sync/atomic"
 	"syscall"
+	"time"
 	"unsafe"
 )
 
@@ -70,6 +71,13 @@ func DebugPrint(args ...interface{}) {
 	}
 }
 
+var QuitDelayDuration = 1 * time.Second
+
+func DelayAndQuit() {
+	Println("Delay for quit.")
+	time.Sleep(QuitDelayDuration)
+	Println("Quiting ...")
+}
 func WaitingQuit() {
 	signal.Notify(SignalChan, os.Interrupt, os.Kill)
 	select {
@@ -77,7 +85,39 @@ func WaitingQuit() {
 		Quit()
 	case <-QuitChan():
 	}
-	Println("Quiting ...")
+}
+
+func OnQuit(handlers ...func()) {
+	for k := range handlers {
+		handler := handlers[k]
+		go func() {
+			<-QuitChan()
+			handler()
+		}()
+	}
+}
+
+func OnQuitAndLogError(handlers ...func() error) {
+	for k := range handlers {
+		handler := handlers[k]
+		go func() {
+			<-QuitChan()
+			err := handler()
+			if err != nil {
+				LogError(err)
+			}
+		}()
+	}
+}
+
+func OnQuitAndIgnoreError(handlers ...func() error) {
+	for k := range handlers {
+		handler := handlers[k]
+		go func() {
+			<-QuitChan()
+			handler()
+		}()
+	}
 }
 func Bye() {
 	if LeaveMessage != "" {
