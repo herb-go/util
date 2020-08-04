@@ -71,7 +71,7 @@ func DebugPrint(args ...interface{}) {
 	}
 }
 
-var QuitDelayDuration = 1 * time.Second
+var QuitDelayDuration = 500 * time.Microsecond
 
 func DelayAndQuit() {
 	Println("Delay for quit.")

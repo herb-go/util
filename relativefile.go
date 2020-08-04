@@ -13,6 +13,7 @@ import (
 type RelativeFileLocation string
 
 const RelativeFileLocationRoot = RelativeFileLocation("")
+const RelativeFileLocationLogs = RelativeFileLocation("logs")
 const RelativeFileLocationAppData = RelativeFileLocation("appdata")
 const RelativeFileLocationConfig = RelativeFileLocation("config")
 const RelativeFileLocationConstants = RelativeFileLocation("constants")
@@ -41,6 +42,8 @@ func (f *RelativeFile) AbsolutePath() string {
 		return Resources(f.Path)
 	case RelativeFileLocationAppData:
 		return AppData(f.Path)
+	case RelativeFileLocationLogs:
+		return Logs(f.Path)
 	}
 	return Root(f.Path)
 }

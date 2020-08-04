@@ -2,7 +2,6 @@ package util
 
 import (
 	"os"
-	"path"
 	"path/filepath"
 )
 
@@ -13,7 +12,18 @@ func RegisterDataFolder(folder ...string) string {
 	registeredFolders = append(registeredFolders, folder)
 	return AppData(folder...)
 }
+func MakeLoggerFolderIfNotExist() {
+	_, err := os.Stat(LogsPath)
+	if err != nil {
+		if os.IsNotExist(err) {
 
+			err = os.MkdirAll(LogsPath, DefaultFolderMode)
+			if err != nil {
+				panic(err)
+			}
+		}
+	}
+}
 func MustLoadRegisteredFolders() {
 	for _, v := range registeredFolders {
 		folder := AppData(v...)
@@ -40,6 +50,7 @@ func mustPath(path string, err error) string {
 var RootPath string
 var ResourcesPath string
 var AppDataPath string
+var LogsPath string
 var ConfigPath string
 var SystemPath string
 var ConstantsPath string
@@ -53,6 +64,9 @@ var UpdatePaths = func() error {
 	}
 	if AppDataPath == "" {
 		AppDataPath = filepath.Join(RootPath, "appdata")
+	}
+	if LogsPath == "" {
+		LogsPath = filepath.Join(RootPath, "logs")
 	}
 	if ConfigPath == "" {
 		ConfigPath = filepath.Join(RootPath, "config")
@@ -81,8 +95,8 @@ func MustGetWD() string {
 	return path
 }
 
-func joinPath(p string, filepath ...string) string {
-	return path.Join(p, path.Join(filepath...))
+func joinPath(p string, filepaths ...string) string {
+	return filepath.Join(p, filepath.Join(filepaths...))
 }
 func Resources(filepaths ...string) string {
 	return joinPath(ResourcesPath, filepaths...)
@@ -92,6 +106,9 @@ func Config(filepaths ...string) string {
 }
 func AppData(filepaths ...string) string {
 	return joinPath(AppDataPath, filepaths...)
+}
+func Logs(filepaths ...string) string {
+	return joinPath(LogsPath, filepaths...)
 }
 func System(filepaths ...string) string {
 	return joinPath(SystemPath, filepaths...)
