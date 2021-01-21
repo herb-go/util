@@ -25,9 +25,9 @@ func TestTime(t *testing.T) {
 		t.Fatal(timelabel)
 	}
 	tc := &TimeConfig{
-		DateFormat:     "2006-01-02!",
-		DatetimeFormat: "2006-01-02 15:04:05!",
-		TimeFormat:     "15:04:05!",
+		DateLayout:     "2006-01-02!",
+		DatetimeLayout: "2006-01-02 15:04:05!",
+		TimeLayout:     "15:04:05!",
 		Timezone:       "Asia/Shanghai",
 	}
 

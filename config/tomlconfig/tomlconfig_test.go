@@ -18,7 +18,7 @@ func TestTOMLConfig(t *testing.T) {
 		Data string
 	}
 	d := &Data{}
-	file := configuration.Text(data)
+	file := source.Text(data)
 	MustLoad(file, d)
 	if d.Data != "1234" {
 		t.Fatal(d)

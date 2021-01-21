@@ -5,6 +5,7 @@ import (
 	"crypto/tls"
 	"errors"
 	"io/ioutil"
+	"log"
 	"net/http"
 	"os"
 	"strings"
@@ -22,9 +23,9 @@ func TestConfig(t *testing.T) {
 }
 func TestHttp(t *testing.T) {
 	output := bytes.NewBuffer([]byte{})
-	util.Logger.SetOutput(output)
+	log.SetOutput(output)
 	defer func() {
-		util.Logger.SetOutput(os.Stderr)
+		log.SetOutput(os.Stderr)
 	}()
 	config := &httpservice.Config{}
 	config.Net = "tcp"
