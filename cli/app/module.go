@@ -46,6 +46,9 @@ func (m *BasicModule) FlagSet() *flag.FlagSet {
 func (m *BasicModule) Exec(a *Application, args []string) error {
 	return nil
 }
+func (m *BasicModule) Reset() {
+	m.flagset = nil
+}
 
 type Modules []Module
 
