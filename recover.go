@@ -55,7 +55,12 @@ func LogError(err error) {
 			length = maxLength
 		}
 		var output = make([]string, length-6)
-		output[0] = fmt.Sprintf("Panic: %s", err.Error())
+		panicid := IDGenerator()
+		var panicidinfo string
+		if panicid != "" {
+			panicidinfo = fmt.Sprintf("[PanicID:%s] - ", panicid)
+		}
+		output[0] = fmt.Sprintf("Panic: %s%s", panicidinfo, err.Error())
 		output[0] += "\n" + lines[0]
 		copy(output[1:], lines[7:])
 		ErrorLogger(strings.Join(output, "\n"))

@@ -10,6 +10,9 @@ import (
 	"github.com/herb-go/util"
 )
 
+//HeaderPanicID header for panic id.
+var HeaderPanicID = "panicid"
+
 //RecoverMiddleware create recover middleware with given logger.
 func RecoverMiddleware(logger *log.Logger) func(w http.ResponseWriter, req *http.Request, next http.HandlerFunc) {
 	return func(w http.ResponseWriter, req *http.Request, next http.HandlerFunc) {
@@ -25,7 +28,15 @@ func RecoverMiddleware(logger *log.Logger) func(w http.ResponseWriter, req *http
 						length = maxLength
 					}
 					var output = make([]string, length-6)
-					output[0] = fmt.Sprintf("Panic: %s - http request %s \"%s\" ", err.Error(), req.Method, req.URL.String())
+					panicid := util.IDGenerator()
+					var panicidinfo string
+					if panicid != "" {
+						if HeaderPanicID != "" {
+							w.Header().Set(HeaderPanicID, panicid)
+						}
+						panicidinfo = fmt.Sprintf("[PanicID:%s] - ", panicid)
+					}
+					output[0] = fmt.Sprintf("Panic: %s%s - http request %s \"%s\" ", panicidinfo, err.Error(), req.Method, req.URL.String())
 					output[0] += "\n" + lines[0]
 					copy(output[1:], lines[7:])
 					result = strings.Join(output, "\n")
