@@ -13,8 +13,8 @@ import (
 //HeaderPanicID header for panic id.
 var HeaderPanicID = "panicid"
 
-//RecoverMiddleware create recover middleware with given logger.
-func RecoverMiddleware(logger *log.Logger) func(w http.ResponseWriter, req *http.Request, next http.HandlerFunc) {
+//CreateRecoverMiddleware create recover middleware by given logger and renders.
+func CreateRecoverMiddleware(logger *log.Logger, renderers []ErrorRenderer) func(w http.ResponseWriter, req *http.Request, next http.HandlerFunc) {
 	return func(w http.ResponseWriter, req *http.Request, next http.HandlerFunc) {
 		defer func() {
 			if r := recover(); r != nil {
@@ -49,10 +49,26 @@ func RecoverMiddleware(logger *log.Logger) func(w http.ResponseWriter, req *http
 				if util.Debug {
 					http.Error(w, result, http.StatusInternalServerError)
 				} else {
+					for _, v := range renderers {
+						notfinished := !v(w, req, err)
+						if !notfinished {
+							return
+						}
+					}
 					http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
 				}
 			}
 		}()
 		next(w, req)
 	}
+}
+
+//RecoverMiddleware create recover middleware with given logger.
+func RecoverMiddleware(logger *log.Logger) func(w http.ResponseWriter, req *http.Request, next http.HandlerFunc) {
+	return CreateRecoverMiddleware(logger, nil)
+}
+
+//PrivateRecoverMiddleware create private recover middleware with given logger.
+func PrivateRecoverMiddleware(logger *log.Logger) func(w http.ResponseWriter, req *http.Request, next http.HandlerFunc) {
+	return CreateRecoverMiddleware(logger, PrivateRenderers)
 }
