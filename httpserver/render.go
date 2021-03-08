@@ -1,9 +1,14 @@
 package httpserver
 
 import (
-	"fmt"
 	"net/http"
 )
+
+//HeaderPanicID header for panic id.
+var HeaderPanicID = "panic-id"
+
+//HeaderPrivateRef header for private ref.
+var HeaderPrivateRef = "private-ref"
 
 //ErrorRenderer error http render.
 //Return false if render finished.
@@ -21,9 +26,7 @@ func PrivateRefRenderer(w http.ResponseWriter, r *http.Request, err error) bool 
 		if e, ok := err.(PrivateRefError); ok {
 			ref := e.ErrorPrivateRef()
 			if ref != "" {
-				msg := fmt.Sprintf("%s\nRef:%s", http.StatusText(500), ref)
-				http.Error(w, msg, 500)
-				return false
+				w.Header().Set(HeaderPrivateRef, ref)
 			}
 		}
 	}

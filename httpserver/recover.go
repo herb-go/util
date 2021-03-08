@@ -10,9 +10,6 @@ import (
 	"github.com/herb-go/util"
 )
 
-//HeaderPanicID header for panic id.
-var HeaderPanicID = "panicid"
-
 //CreateRecoverMiddleware create recover middleware by given logger and renders.
 func CreateRecoverMiddleware(logger *log.Logger, renderers []ErrorRenderer) func(w http.ResponseWriter, req *http.Request, next http.HandlerFunc) {
 	return func(w http.ResponseWriter, req *http.Request, next http.HandlerFunc) {
