@@ -8,9 +8,9 @@ import (
 type Stage int
 
 const (
-	StageInit   = Stage(iota)
-	StageNormal = Stage(iota)
-	StageFinish = Stage(iota)
+	StageInit   = Stage(0)
+	StageNormal = Stage(5)
+	StageFinish = Stage(9)
 )
 
 type Module struct {
