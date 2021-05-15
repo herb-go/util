@@ -44,3 +44,14 @@ func GetErrorType(err error) ErrorType {
 	}
 	return e.Type
 }
+
+func Catch(f func()) (err error) {
+	defer func() {
+		r := recover()
+		if r != nil {
+			err = r.(error)
+		}
+	}()
+	f()
+	return nil
+}
