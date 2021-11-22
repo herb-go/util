@@ -28,6 +28,9 @@ func (c *TimeConfig) Parse(s string) (time.Time, error) {
 	}
 	return time.ParseInLocation(format, s, c.loadLocation())
 }
+func (c *TimeConfig) Location() *time.Location {
+	return c.loadLocation()
+}
 func (c *TimeConfig) loadLocation() *time.Location {
 	if c.location == nil {
 		if c.Timezone == "" {
