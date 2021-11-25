@@ -97,3 +97,9 @@ func (c *TimeConfig) Datetime(t time.Time) string {
 	}
 	return localTime.Format(c.DatetimeLayout)
 }
+
+//FormatNow format with given time
+func (c *TimeConfig) FormatNow(format string) string {
+	localTime := c.TimeInLocation(time.Now())
+	return localTime.Format(format)
+}
