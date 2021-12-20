@@ -46,7 +46,12 @@ func mustPath(path string, err error) string {
 	}
 	return path
 }
+func IsPathExists(path string) bool {
+	_, err := os.Stat(path)
+	return err == nil
+}
 
+var AutoDetectCWD = true
 var RootPath string
 var ResourcesPath string
 var AppDataPath string
@@ -57,7 +62,12 @@ var ConstantsPath string
 var DefaultConfigPath string
 var UpdatePaths = func() error {
 	if RootPath == "" {
-		RootPath = filepath.Join(filepath.Dir(mustPath(os.Executable())), "../")
+		var execute string
+		execute = filepath.Dir(mustPath(os.Executable()))
+		if AutoDetectCWD && ConfigPath == "" && !IsPathExists(filepath.Join(execute, "../", "config")) {
+			execute = MustGetWD()
+		}
+		RootPath = filepath.Join(execute, "../")
 	}
 	if ResourcesPath == "" {
 		ResourcesPath = filepath.Join(RootPath, "resources")
