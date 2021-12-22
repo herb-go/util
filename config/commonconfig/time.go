@@ -28,6 +28,15 @@ func (c *TimeConfig) Parse(s string) (time.Time, error) {
 	}
 	return time.ParseInLocation(format, s, c.loadLocation())
 }
+
+func (c *TimeConfig) MustParse(s string) time.Time {
+	t, err := c.Parse(s)
+	if err != nil {
+		panic(err)
+	}
+	return t
+}
+
 func (c *TimeConfig) Location() *time.Location {
 	return c.loadLocation()
 }
