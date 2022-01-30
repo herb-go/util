@@ -66,3 +66,9 @@ func LogError(err error) {
 		ErrorLogger(strings.Join(output, "\n"))
 	}
 }
+
+func LogIfError(err error) {
+	if err != nil {
+		LogError(err)
+	}
+}
