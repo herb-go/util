@@ -15,7 +15,7 @@ import (
 	"unsafe"
 )
 
-var ApplieationLock sync.Mutex
+var ApplicationLock sync.Mutex
 
 func Must(err error) {
 	if err != nil {

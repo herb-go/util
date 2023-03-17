@@ -14,6 +14,7 @@ func Recover() {
 		s, ok := r.(string)
 		if ok {
 			LogError(errors.New(s))
+			return
 		}
 		err := r.(error)
 		LogError(err)
@@ -25,6 +26,7 @@ func RecoverAndExit() {
 		s, ok := r.(string)
 		if ok {
 			LogError(errors.New(s))
+			return
 		}
 		err := r.(error)
 		LogError(err)
