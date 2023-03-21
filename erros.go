@@ -48,13 +48,13 @@ func GetErrorType(err error) ErrorType {
 
 func Catch(f func()) (err error) {
 	defer func() {
-		s, ok := r.(string)
-		if ok {
-			err = errors.New(s)
-			return
-		}
 		r := recover()
 		if r != nil {
+			s, ok := r.(string)
+			if ok {
+				err = errors.New(s)
+				return
+			}
 			err = r.(error)
 		}
 	}()
